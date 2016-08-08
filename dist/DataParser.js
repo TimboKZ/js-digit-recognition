@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.7
+ * @version 0.0.8
  */
 "use strict";
 /**
@@ -130,11 +130,12 @@ var DataParser = (function () {
     /**
      * Converts 2D coordinates to an array assuming enumeration goes from left to right and then from top to bottom.
      * Uses the IMAGE_SIZE constant.
+     * @since 0.0.8 Flip X and Y to fix a bug where all numbers would be reflected
      * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
      */
     DataParser.coordinatesToIndex = function (x, y, columns) {
-        return x + (y - 1) * columns * exports.IMAGE_SIZE;
+        return y - 1 + x * columns * exports.IMAGE_SIZE;
     };
     /**
      * Combines the supplied data sets, randomising the order of matrices if required

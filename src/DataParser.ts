@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.7
+ * @version 0.0.8
  */
 
 /**
@@ -195,11 +195,12 @@ export class DataParser {
     /**
      * Converts 2D coordinates to an array assuming enumeration goes from left to right and then from top to bottom.
      * Uses the IMAGE_SIZE constant.
+     * @since 0.0.8 Flip X and Y to fix a bug where all numbers would be reflected
      * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
      */
     private static coordinatesToIndex(x: number, y: number, columns: number): number {
-        return x + (y - 1) * columns * IMAGE_SIZE;
+        return y - 1 + x * columns * IMAGE_SIZE;
     }
 
     /**
