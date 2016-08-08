@@ -5,7 +5,7 @@ import {Unit} from './Unit';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 
 /**
@@ -65,6 +65,7 @@ export class Neuron {
     /**
      * Logic for the backward pass, first backdrops the gradients to the input units and then adjusts the stored
      * variable units using the step size
+     * @since 0.0.5 Added a rectifier for inputUnit.gradient
      * @since 0.0.4 Fixed a bug where `i` would be compared to Unit[]
      * @since 0.0.3 stepSize is now optional
      * @since 0.0.1
@@ -76,7 +77,7 @@ export class Neuron {
             if (this.inputUnits[i]) {
                 let inputUnit = this.inputUnits[i];
                 coefficient = inputUnit.value;
-                inputUnit.gradient = variableUnit.value * this.outputUnit.gradient;
+                inputUnit.gradient = coefficient > 0 ? variableUnit.value * this.outputUnit.gradient : 0.0;
             }
             variableUnit.gradient = coefficient * this.outputUnit.gradient;
             if (stepSize) {

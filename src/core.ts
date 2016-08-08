@@ -30,21 +30,21 @@ for (let i = 0; i < dataSet.testingSet.length; i++) {
     dataSet.testingSet[i].matrix = newMatrix;
 }
 
-let nn = new NeuralNetwork(64, 1, [32]);
+let nn = new NeuralNetwork(64, 1, [64]);
 
 let roundOutput = function (output: number): number {
     return Math.round(output);
 };
 
-let trainingStepSize = 0.001;
+let trainingStepSize = 0.0001;
 
-let trainingMatricesCount = 200;
+let trainingMatricesCount = 6000;
 let trainingMatrices = dataSet.trainingSet.slice(0, trainingMatricesCount + 1);
-let testingMatricesCount = 100;
+let testingMatricesCount = 250;
 let testingMatrices = dataSet.testingSet.slice(0, testingMatricesCount + 1);
 
 let trainingIterations = 25;
-let trainingRounds = 50;
+let trainingRounds = 75;
 
 let totalIterations = 0;
 for (let round = 0; round < trainingRounds; round++) {

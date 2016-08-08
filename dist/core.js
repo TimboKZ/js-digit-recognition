@@ -29,17 +29,17 @@ for (var i = 0; i < dataSet.testingSet.length; i++) {
     }
     dataSet.testingSet[i].matrix = newMatrix;
 }
-var nn = new NeuralNetwork_1.NeuralNetwork(64, 1, [32]);
+var nn = new NeuralNetwork_1.NeuralNetwork(64, 1, [64]);
 var roundOutput = function (output) {
     return Math.round(output);
 };
-var trainingStepSize = 0.001;
-var trainingMatricesCount = 200;
+var trainingStepSize = 0.0001;
+var trainingMatricesCount = 6000;
 var trainingMatrices = dataSet.trainingSet.slice(0, trainingMatricesCount + 1);
-var testingMatricesCount = 100;
+var testingMatricesCount = 250;
 var testingMatrices = dataSet.testingSet.slice(0, testingMatricesCount + 1);
 var trainingIterations = 25;
-var trainingRounds = 50;
+var trainingRounds = 75;
 var totalIterations = 0;
 var _loop_1 = function(round) {
     var correctGuesses = 0;
