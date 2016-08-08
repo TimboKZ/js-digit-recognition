@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.5
+ * @version 0.0.7
  */
 
 /**
@@ -16,9 +16,10 @@ const IMAGE_PATH_FORMAT = 'raw_data/usps_{DIGIT}.jpg';
 
 /**
  * Size of the image in pixels, assuming square image
+ * @since 0.0.7 Added `export` keyword
  * @since 0.0.1
  */
-const IMAGE_SIZE = 16;
+export const IMAGE_SIZE = 16;
 
 /**
  * Default data set size, JPEG images in `raw_data` directory all have 1100 16x16 pixel images
@@ -171,6 +172,7 @@ export class DataParser {
 
     /**
      * Extract a sub-image from the supplied imageData
+     * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
      */
     private static subImage(startX: number,
@@ -182,7 +184,7 @@ export class DataParser {
         let index = 0;
         for (let row = 0; row < size; row++) {
             for (let column = 0; column < size; column++) {
-                let imageDataIndex = DataParser.coordinatesToIndex(row + startX, column + startY, columns);
+                let imageDataIndex = DataParser.coordinatesToIndex(row + startX, column + startY, columns - 1);
                 subImage[index] = imageData[imageDataIndex * 4];
                 index++;
             }
@@ -193,10 +195,11 @@ export class DataParser {
     /**
      * Converts 2D coordinates to an array assuming enumeration goes from left to right and then from top to bottom.
      * Uses the IMAGE_SIZE constant.
+     * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
      */
     private static coordinatesToIndex(x: number, y: number, columns: number): number {
-        return x + y * columns * IMAGE_SIZE;
+        return x + (y - 1) * columns * IMAGE_SIZE;
     }
 
     /**
@@ -222,4 +225,19 @@ export class DataParser {
         };
     }
 
+    /**
+     * Prints out an image from an array of greyscale pixels
+     * @since 0.0.6
+     */
+    public static printImage(imageData: number[], size: number, threshold: number, symbol: string = '$$') {
+        let output = '';
+        for (let i = 0; i < imageData.length; i++) {
+            output += imageData[i] > threshold ? symbol : '  ';
+            if (i % size === 0) {
+                console.log(output);
+                output = '';
+            }
+        }
+        console.log(output);
+    }
 }

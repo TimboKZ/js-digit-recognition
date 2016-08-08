@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.5
+ * @version 0.0.7
  */
 "use strict";
 /**
@@ -15,9 +15,10 @@
 var IMAGE_PATH_FORMAT = 'raw_data/usps_{DIGIT}.jpg';
 /**
  * Size of the image in pixels, assuming square image
+ * @since 0.0.7 Added `export` keyword
  * @since 0.0.1
  */
-var IMAGE_SIZE = 16;
+exports.IMAGE_SIZE = 16;
 /**
  * Default data set size, JPEG images in `raw_data` directory all have 1100 16x16 pixel images
  * @since 0.0.1
@@ -81,8 +82,8 @@ var DataParser = (function () {
      * @since 0.0.1
      */
     DataParser.buildDataSet = function (digit, imageData) {
-        var rows = imageData.width / IMAGE_SIZE;
-        var columns = imageData.height / IMAGE_SIZE;
+        var rows = imageData.width / exports.IMAGE_SIZE;
+        var columns = imageData.height / exports.IMAGE_SIZE;
         if (DATA_SET_SIZE > rows * columns) {
             throw new Error('Provided imageData contains less images than expected! ' + rows * columns + ' < ' + DATA_SET_SIZE);
         }
@@ -94,7 +95,7 @@ var DataParser = (function () {
                 matrixCounter++;
                 var digitMatrix = {
                     digit: digit,
-                    matrix: DataParser.subImage(rowsIterator * IMAGE_SIZE, columnsIterator * IMAGE_SIZE, IMAGE_SIZE, columns, imageData.data),
+                    matrix: DataParser.subImage(rowsIterator * exports.IMAGE_SIZE, columnsIterator * exports.IMAGE_SIZE, exports.IMAGE_SIZE, columns, imageData.data),
                 };
                 if (matrixCounter < TRAINING_SET_SIZE) {
                     trainingMatrices.push(digitMatrix);
@@ -111,6 +112,7 @@ var DataParser = (function () {
     };
     /**
      * Extract a sub-image from the supplied imageData
+     * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
      */
     DataParser.subImage = function (startX, startY, size, columns, imageData) {
@@ -118,7 +120,7 @@ var DataParser = (function () {
         var index = 0;
         for (var row = 0; row < size; row++) {
             for (var column = 0; column < size; column++) {
-                var imageDataIndex = DataParser.coordinatesToIndex(row + startX, column + startY, columns);
+                var imageDataIndex = DataParser.coordinatesToIndex(row + startX, column + startY, columns - 1);
                 subImage[index] = imageData[imageDataIndex * 4];
                 index++;
             }
@@ -128,10 +130,11 @@ var DataParser = (function () {
     /**
      * Converts 2D coordinates to an array assuming enumeration goes from left to right and then from top to bottom.
      * Uses the IMAGE_SIZE constant.
+     * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
      */
     DataParser.coordinatesToIndex = function (x, y, columns) {
-        return x + y * columns * IMAGE_SIZE;
+        return x + (y - 1) * columns * exports.IMAGE_SIZE;
     };
     /**
      * Combines the supplied data sets, randomising the order of matrices if required
@@ -155,6 +158,22 @@ var DataParser = (function () {
             testingSet: allTestingSets,
             trainingSet: allTrainingSets,
         };
+    };
+    /**
+     * Prints out an image from an array of greyscale pixels
+     * @since 0.0.6
+     */
+    DataParser.printImage = function (imageData, size, threshold, symbol) {
+        if (symbol === void 0) { symbol = '$$'; }
+        var output = '';
+        for (var i = 0; i < imageData.length; i++) {
+            output += imageData[i] > threshold ? symbol : '  ';
+            if (i % size === 0) {
+                console.log(output);
+                output = '';
+            }
+        }
+        console.log(output);
     };
     /**
      * Stores data for each digits that were previously accessed in case a specific data set will be requested again
