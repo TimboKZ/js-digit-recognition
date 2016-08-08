@@ -1,13 +1,12 @@
 import {Neuron} from './Neuron';
 import {Unit} from './Unit';
-import preProcessFile = ts.preProcessFile;
 /**
  * File containing all interfaces and classes related to the representation of a Neuron layer
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 /**
@@ -43,9 +42,10 @@ export class Layer {
 
     /**
      * Layer constructor.
+     * @since 0.0.2 Removed `private` access modifier
      * @since 0.0.1
      */
-    private constructor(neurons: Neuron[], outputUnits: Unit[], previousLayer?: Layer) {
+    constructor(neurons: Neuron[], outputUnits: Unit[], previousLayer?: Layer) {
         this.neurons = neurons;
         this.outputUnits = outputUnits;
         if (previousLayer) {
@@ -74,6 +74,7 @@ export class Layer {
      * Generates a layer of neurons using the previous layer as the input provider and the neuron count supplied. If
      * neuronCount is 1 this layer can be considered an output layer. The value for the variable units is determined
      * randomly in range from 0.5 to -0.5
+     * @since 0.0.2 Added type for `variableUnits`
      * @since 0.0.1
      */
     public static fromLayer(neuronCount: number, previousLayer: Layer): Layer {
@@ -81,7 +82,7 @@ export class Layer {
         let outputUnits: Unit[] = [];
         for (let i = 0; i < neuronCount; i++) {
             outputUnits[i] = new Unit();
-            let variableUnits = [];
+            let variableUnits: Unit[] = [];
             let inputUnitsLength = previousLayer.getOutputUnits().length;
             for (let k = 0; k < inputUnitsLength + 1; k++) {
                 variableUnits.push(new Unit(Math.random() - 0.5));

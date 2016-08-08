@@ -7,7 +7,7 @@ var Unit_1 = require('./Unit');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 /**
  * Class representing the base layer, used mostly for hidden layers
@@ -16,6 +16,7 @@ var Unit_1 = require('./Unit');
 var Layer = (function () {
     /**
      * Layer constructor.
+     * @since 0.0.2 Removed `private` access modifier
      * @since 0.0.1
      */
     function Layer(neurons, outputUnits, previousLayer) {
@@ -45,6 +46,7 @@ var Layer = (function () {
      * Generates a layer of neurons using the previous layer as the input provider and the neuron count supplied. If
      * neuronCount is 1 this layer can be considered an output layer. The value for the variable units is determined
      * randomly in range from 0.5 to -0.5
+     * @since 0.0.2 Added type for `variableUnits`
      * @since 0.0.1
      */
     Layer.fromLayer = function (neuronCount, previousLayer) {
