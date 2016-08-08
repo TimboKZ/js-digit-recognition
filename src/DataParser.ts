@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.3
+ * @version 0.0.4
  */
 
 /**
@@ -35,9 +35,10 @@ const TRAINING_SET_SIZE = 550;
 /**
  * Interface representing a digit, contains the integer corresponding to the digit and an 16x16 matrix of pixels.
  * The images are greyscale so just one number per pixel is enough to retrieve the RGB breakdown.
+ * @since 0.0.4 Added `export` keyword
  * @since 0.0.1
  */
-interface IDigitMatrix {
+export interface IDigitMatrix {
     digit: number;
     matrix: number[];
 }
