@@ -1,3 +1,4 @@
+import {DataParser} from './DataParser';
 /**
  * The core of the neural network
  *
@@ -6,3 +7,6 @@
  * @license https://opensource.org/licenses/mit-license.php MIT License
  * @version 0.0.1
  */
+
+let parser = new DataParser();
+parser.getDataSet(0);

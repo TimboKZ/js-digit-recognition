@@ -5,6 +5,9 @@
     "start": "node dist/core.js"
   },
   "dependencies": {
+    "buffer": "^4.9.0",
+    "fs": "0.0.2",
+    "jpeg-js": "^0.2.0"
   },
   "devDependencies": {
     "source-map-loader": "^0.1.5",
