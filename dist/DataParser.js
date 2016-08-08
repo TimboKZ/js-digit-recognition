@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 "use strict";
 /**
@@ -47,7 +47,7 @@ var DataParser = (function () {
         var regexp = new RegExp('\{DIGIT\}');
         var imageData = DataParser.getImageData(IMAGE_PATH_FORMAT.replace(regexp, digit.toString()));
         if (!imageData) {
-            return null;
+            throw new Error('Could not load image data!');
         }
         var dataSet = DataParser.buildDataSet(digit, imageData);
         this.dataCache[digit] = dataSet;
@@ -105,8 +105,8 @@ var DataParser = (function () {
             }
         }
         return {
-            trainingSet: trainingMatrices,
             testingSet: testingMatrices,
+            trainingSet: trainingMatrices,
         };
     };
     /**
@@ -152,8 +152,8 @@ var DataParser = (function () {
             allTestingSets = shuffle(allTestingSets);
         }
         return {
+            testingSet: allTestingSets,
             trainingSet: allTrainingSets,
-            testingSet: allTestingSets
         };
     };
     /**

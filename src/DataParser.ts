@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 
 /**
@@ -46,9 +46,10 @@ export interface IDigitMatrix {
 /**
  * A data set consisting of a training set and testing set, to be used for training and testing of the
  * neural network respectively
+ * @since 0.0.5 Added `export` keyword
  * @since 0.0.1
  */
-interface IDigitDataSet {
+export interface IDigitDataSet {
     trainingSet: IDigitMatrix[];
     testingSet: IDigitMatrix[];
 }
@@ -94,12 +95,12 @@ export class DataParser {
         if (this.dataCache[digit]) {
             return this.dataCache[digit];
         }
-        var regexp = new RegExp('\{DIGIT\}');
-        var imageData = DataParser.getImageData(IMAGE_PATH_FORMAT.replace(regexp, digit.toString()));
+        let regexp = new RegExp('\{DIGIT\}');
+        let imageData = DataParser.getImageData(IMAGE_PATH_FORMAT.replace(regexp, digit.toString()));
         if (!imageData) {
-            return null;
+            throw new Error('Could not load image data!');
         }
-        var dataSet = DataParser.buildDataSet(digit, imageData);
+        let dataSet = DataParser.buildDataSet(digit, imageData);
         this.dataCache[digit] = dataSet;
         return dataSet;
     }
@@ -110,9 +111,9 @@ export class DataParser {
      * @since 0.0.1
      */
     public static getImageData(imagePath: string): IImageData {
-        var jpeg = require('jpeg-js');
-        var fs = require('fs');
-        var jpegData: string;
+        let jpeg = require('jpeg-js');
+        let fs = require('fs');
+        let jpegData: string;
         try {
             jpegData = fs.readFileSync(imagePath);
         } catch (exception) {
@@ -135,7 +136,9 @@ export class DataParser {
         let rows = imageData.width / IMAGE_SIZE;
         let columns = imageData.height / IMAGE_SIZE;
         if (DATA_SET_SIZE > rows * columns) {
-            throw new Error('Provided imageData contains less images than expected! ' + rows * columns + ' < ' + DATA_SET_SIZE);
+            throw new Error(
+                'Provided imageData contains less images than expected! ' + rows * columns + ' < ' + DATA_SET_SIZE
+            );
         }
         let trainingMatrices: IDigitMatrix[] = [];
         let testingMatrices: IDigitMatrix[] = [];
@@ -161,16 +164,20 @@ export class DataParser {
             }
         }
         return {
-            trainingSet: trainingMatrices,
             testingSet: testingMatrices,
-        }
+            trainingSet: trainingMatrices,
+        };
     }
 
     /**
      * Extract a sub-image from the supplied imageData
      * @since 0.0.1
      */
-    private static subImage(startX: number, startY: number, size: number, columns: number, imageData: Uint8Array): number[] {
+    private static subImage(startX: number,
+                            startY: number,
+                            size: number,
+                            columns: number,
+                            imageData: Uint8Array): number[] {
         let subImage: number[] = [];
         let index = 0;
         for (let row = 0; row < size; row++) {
@@ -200,19 +207,19 @@ export class DataParser {
     public static combineDataSets(dataSets: IDigitDataSet[], randomise: boolean = false): IDigitDataSet {
         let allTrainingSets: IDigitMatrix[] = [];
         let allTestingSets: IDigitMatrix[] = [];
-        for(let i = 0; i < dataSets.length; i++) {
+        for (let i = 0; i < dataSets.length; i++) {
             allTrainingSets = allTrainingSets.concat(dataSets[i].trainingSet);
             allTestingSets = allTestingSets.concat(dataSets[i].testingSet);
         }
-        if(randomise) {
-            var shuffle = require('knuth-shuffle').knuthShuffle;
+        if (randomise) {
+            let shuffle = require('knuth-shuffle').knuthShuffle;
             allTrainingSets = shuffle(allTrainingSets);
             allTestingSets = shuffle(allTestingSets);
         }
         return {
+            testingSet: allTestingSets,
             trainingSet: allTrainingSets,
-            testingSet: allTestingSets
-        }
+        };
     }
 
 }

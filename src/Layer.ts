@@ -85,7 +85,7 @@ export class Layer {
             let variableUnits: Unit[] = [];
             let inputUnitsLength = previousLayer.getOutputUnits().length;
             for (let k = 0; k < inputUnitsLength + 1; k++) {
-                variableUnits.push(new Unit(Math.random() - 0.5));
+                variableUnits.push(new Unit((Math.random() - 0.5) / 4));
             }
             neurons[i] = new Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
         }

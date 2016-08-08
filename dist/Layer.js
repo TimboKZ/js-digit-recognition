@@ -57,7 +57,7 @@ var Layer = (function () {
             var variableUnits = [];
             var inputUnitsLength = previousLayer.getOutputUnits().length;
             for (var k = 0; k < inputUnitsLength + 1; k++) {
-                variableUnits.push(new Unit_1.Unit(Math.random() - 0.5));
+                variableUnits.push(new Unit_1.Unit((Math.random() - 0.5) / 4));
             }
             neurons[i] = new Neuron_1.Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
         }
