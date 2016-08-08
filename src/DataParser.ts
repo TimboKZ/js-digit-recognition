@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 /**
@@ -195,4 +195,27 @@ export class DataParser {
     private static coordinatesToIndex(x: number, y: number, columns: number): number {
         return x + y * columns * IMAGE_SIZE;
     }
+
+    /**
+     * Combines the supplied data sets, randomising the order of matrices if required
+     * @since 0.0.2
+     */
+    public static combineDataSets(dataSets: IDigitDataSet[], randomise: boolean = false): IDigitDataSet {
+        let allTrainingSets: IDigitMatrix[] = [];
+        let allTestingSets: IDigitMatrix[] = [];
+        for(let i = 0; i < dataSets.length; i++) {
+            allTrainingSets.concat(dataSets[i].trainingSet);
+            allTestingSets.concat(dataSets[i].testingSet);
+        }
+        if(randomise) {
+            var shuffle = require('knuth-shuffle').knuthShuffle;
+            allTrainingSets = shuffle(allTrainingSets);
+            allTestingSets = shuffle(allTestingSets);
+        }
+        return {
+            trainingSet: allTrainingSets,
+            testingSet: allTestingSets
+        }
+    }
+
 }

@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 "use strict";
 /**
@@ -135,6 +135,28 @@ var DataParser = (function () {
      */
     DataParser.coordinatesToIndex = function (x, y, columns) {
         return x + y * columns * IMAGE_SIZE;
+    };
+    /**
+     * Combines the supplied data sets, randomising the order of matrices if required
+     * @since 0.0.2
+     */
+    DataParser.combineDataSets = function (dataSets, randomise) {
+        if (randomise === void 0) { randomise = false; }
+        var allTrainingSets = [];
+        var allTestingSets = [];
+        for (var i = 0; i < dataSets.length; i++) {
+            allTrainingSets.concat(dataSets[i].trainingSet);
+            allTestingSets.concat(dataSets[i].testingSet);
+        }
+        if (randomise) {
+            var shuffle = require('knuth-shuffle').knuthShuffle;
+            allTrainingSets = shuffle(allTrainingSets);
+            allTestingSets = shuffle(allTestingSets);
+        }
+        return {
+            trainingSet: allTrainingSets,
+            testingSet: allTestingSets
+        };
     };
     return DataParser;
 }());
