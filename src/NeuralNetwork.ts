@@ -1,12 +1,12 @@
-import {Unit} from './Unit';
 import {Layer} from './Layer';
+import {Unit} from './Unit';
 /**
  * File containing all classes and interfaces related to the NeuralNetwork object
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 /**
@@ -90,32 +90,27 @@ export class NeuralNetwork {
     }
 
     /**
-     * Tests the network using some input data and the expected output data, The `outputOperation` function is applied
-     * to the output before comparing it to the expected output. Returns true if the output matches the expected
-     * output and false otherwise.
+     * Uses the network on some input data to retrieve the output, The `outputOperation` function is applied
+     * to the output before returning it.
+     * @since 0.0.2 Now simply returns the output instead of testing it
      * @since 0.0.1
      */
-    public testWith(inputData: number[],
-                    outputData: number[],
-                    outputOperation?: (output: number) => number): boolean {
+    public runWith(inputData: number[],
+                   outputOperation?: (output: number) => number): number[] {
         for (let i = 0; i < inputData.length; i++) {
             if (this.inputUnits[i]) {
                 this.inputUnits[i].value = inputData[i];
             }
         }
         this.inputLayer.forward();
-        let match = true;
-        for (let i = 0; i < outputData.length; i++) {
+        let outputArray: number[] = [];
+        for (let i = 0; i < this.outputUnits.length; i++) {
             let output = this.outputUnits[i].value;
-            let expectedOutput = outputData[i];
             if (outputOperation) {
                 output = outputOperation(output);
             }
-            if (output !== expectedOutput) {
-                match = false;
-                break;
-            }
+            outputArray[i] = output;
         }
-        return match;
+        return outputArray;
     }
 }
