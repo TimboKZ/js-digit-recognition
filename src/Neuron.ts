@@ -5,7 +5,7 @@ import {Unit} from './Unit';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 /**
@@ -34,11 +34,12 @@ export class Neuron {
 
     /**
      * Neuron constructor
+     * @since 0.0.2 outputUnit is now an injected dependency
      * @since 0.0.1
      */
-    public constructor(inputUnits: Unit[], variables: Unit[]) {
+    public constructor(inputUnits: Unit[], outputUnit: Unit, variables: Unit[]) {
         this.inputUnits = inputUnits;
-        this.outputUnit = new Unit();
+        this.outputUnit = outputUnit;
         this.variableUnits = variables;
     }
 
