@@ -6,7 +6,7 @@ import {Unit} from './Unit';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 /**
@@ -39,6 +39,7 @@ export class NeuralNetwork {
 
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.3 Fixed a bug where layers were not interconnected
      * @since 0.0.1
      */
     public constructor(inputCount: number, outputCount: number, hiddenLayers: number[] = []) {
@@ -49,7 +50,9 @@ export class NeuralNetwork {
         this.inputLayer = Layer.fromValues(inputUnits);
         let lastLayer = this.inputLayer;
         for (let i = 0; i < hiddenLayers.length; i++) {
+            let memoryLayer = lastLayer;
             lastLayer = Layer.fromLayer(hiddenLayers[i], lastLayer);
+            memoryLayer.setNextLayer(lastLayer);
         }
         this.outputLayer = Layer.fromLayer(outputCount, lastLayer);
         this.inputUnits = inputUnits;

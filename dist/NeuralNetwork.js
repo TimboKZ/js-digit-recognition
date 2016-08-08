@@ -7,7 +7,7 @@ var Unit_1 = require('./Unit');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 /**
  * The neural network class that manages Layers of Neurons
@@ -16,6 +16,7 @@ var Unit_1 = require('./Unit');
 var NeuralNetwork = (function () {
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.3 Fixed a bug where layers were not interconnected
      * @since 0.0.1
      */
     function NeuralNetwork(inputCount, outputCount, hiddenLayers) {
@@ -27,7 +28,9 @@ var NeuralNetwork = (function () {
         this.inputLayer = Layer_1.Layer.fromValues(inputUnits);
         var lastLayer = this.inputLayer;
         for (var i = 0; i < hiddenLayers.length; i++) {
+            var memoryLayer = lastLayer;
             lastLayer = Layer_1.Layer.fromLayer(hiddenLayers[i], lastLayer);
+            memoryLayer.setNextLayer(lastLayer);
         }
         this.outputLayer = Layer_1.Layer.fromLayer(outputCount, lastLayer);
         this.inputUnits = inputUnits;
