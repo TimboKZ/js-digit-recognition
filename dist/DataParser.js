@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 "use strict";
 /**
@@ -33,18 +33,14 @@ var TRAINING_SET_SIZE = 550;
  * @since 0.0.1
  */
 var DataParser = (function () {
-    /**
-     * DataParser constructor
-     * @since 0.0.1
-     */
     function DataParser() {
-        this.dataCache = [];
     }
     /**
      * Returns a data set for the specified number either from the JPEG file or cache
+     * @since 0.0.3 Variable now static
      * @since 0.0.1
      */
-    DataParser.prototype.getDataSet = function (digit) {
+    DataParser.getDataSet = function (digit) {
         if (this.dataCache[digit]) {
             return this.dataCache[digit];
         }
@@ -59,6 +55,7 @@ var DataParser = (function () {
     };
     /**
      * Attempts to extract raw image data from the specified image, otherwise returns null
+     * @since 0.0.3 Method now static
      * @since 0.0.1
      */
     DataParser.getImageData = function (imagePath) {
@@ -138,6 +135,7 @@ var DataParser = (function () {
     };
     /**
      * Combines the supplied data sets, randomising the order of matrices if required
+     * @since 0.0.3 Fixed bug where empty arrays would be returned for sets
      * @since 0.0.2
      */
     DataParser.combineDataSets = function (dataSets, randomise) {
@@ -145,8 +143,8 @@ var DataParser = (function () {
         var allTrainingSets = [];
         var allTestingSets = [];
         for (var i = 0; i < dataSets.length; i++) {
-            allTrainingSets.concat(dataSets[i].trainingSet);
-            allTestingSets.concat(dataSets[i].testingSet);
+            allTrainingSets = allTrainingSets.concat(dataSets[i].trainingSet);
+            allTestingSets = allTestingSets.concat(dataSets[i].testingSet);
         }
         if (randomise) {
             var shuffle = require('knuth-shuffle').knuthShuffle;
@@ -158,6 +156,12 @@ var DataParser = (function () {
             testingSet: allTestingSets
         };
     };
+    /**
+     * Stores data for each digits that were previously accessed in case a specific data set will be requested again
+     * @since 0.0.3 Variable now static
+     * @since 0.0.1
+     */
+    DataParser.dataCache = [];
     return DataParser;
 }());
 exports.DataParser = DataParser;

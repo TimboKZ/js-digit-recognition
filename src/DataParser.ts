@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 /**
@@ -79,23 +79,17 @@ export class DataParser {
 
     /**
      * Stores data for each digits that were previously accessed in case a specific data set will be requested again
+     * @since 0.0.3 Variable now static
      * @since 0.0.1
      */
-    private dataCache: IData;
-
-    /**
-     * DataParser constructor
-     * @since 0.0.1
-     */
-    public constructor() {
-        this.dataCache = [];
-    }
+    private static dataCache: IData = [];
 
     /**
      * Returns a data set for the specified number either from the JPEG file or cache
+     * @since 0.0.3 Variable now static
      * @since 0.0.1
      */
-    public getDataSet(digit: number): IDigitDataSet {
+    public static getDataSet(digit: number): IDigitDataSet {
         if (this.dataCache[digit]) {
             return this.dataCache[digit];
         }
@@ -111,6 +105,7 @@ export class DataParser {
 
     /**
      * Attempts to extract raw image data from the specified image, otherwise returns null
+     * @since 0.0.3 Method now static
      * @since 0.0.1
      */
     public static getImageData(imagePath: string): IImageData {
@@ -198,14 +193,15 @@ export class DataParser {
 
     /**
      * Combines the supplied data sets, randomising the order of matrices if required
+     * @since 0.0.3 Fixed bug where empty arrays would be returned for sets
      * @since 0.0.2
      */
     public static combineDataSets(dataSets: IDigitDataSet[], randomise: boolean = false): IDigitDataSet {
         let allTrainingSets: IDigitMatrix[] = [];
         let allTestingSets: IDigitMatrix[] = [];
         for(let i = 0; i < dataSets.length; i++) {
-            allTrainingSets.concat(dataSets[i].trainingSet);
-            allTestingSets.concat(dataSets[i].testingSet);
+            allTrainingSets = allTrainingSets.concat(dataSets[i].trainingSet);
+            allTestingSets = allTestingSets.concat(dataSets[i].testingSet);
         }
         if(randomise) {
             var shuffle = require('knuth-shuffle').knuthShuffle;
