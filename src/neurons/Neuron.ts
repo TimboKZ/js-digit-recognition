@@ -1,11 +1,11 @@
-import {Unit} from './Unit';
+import {Unit} from '../Unit';
 /**
- * File containing classes and interfaces for various types of Neurons
+ * File containing classes and interfaces for the base linear Neuron
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.6
+ * @version 0.0.7
  */
 
 /**
@@ -13,24 +13,26 @@ import {Unit} from './Unit';
  * @since 0.0.1
  */
 export class Neuron {
-
     /**
      * Units supplied by the previous layer of neurons
+     * @since 0.0.7 Changed access modifier to `protected`
      * @since 0.0.1
      */
-    private inputUnits: Unit[];
+    protected inputUnits: Unit[];
 
     /**
      * Output unit to be supplied to the next layer of neurons
+     * @since 0.0.7 Changed access modifier to `protected`
      * @since 0.0.1
      */
-    private outputUnit: Unit;
+    protected outputUnit: Unit;
 
     /**
      * Variable units that will be adjusted during training
+     * @since 0.0.7 Changed access modifier to `protected`
      * @since 0.0.1
      */
-    private variableUnits: Unit[];
+    protected variableUnits: Unit[];
 
     /**
      * Neuron constructor
