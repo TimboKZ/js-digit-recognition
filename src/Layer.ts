@@ -64,7 +64,6 @@ export class Layer {
         for (let i = 0; i < values.length; i++) {
             outputUnits[i] = new Unit();
             let variableUnits = [new Unit(1.0)];
-            // TODO: Check if slicing works correctly
             neurons[i] = new Neuron(values.slice(i, i + 1), outputUnits[i], variableUnits);
         }
         return new Layer(neurons, outputUnits);

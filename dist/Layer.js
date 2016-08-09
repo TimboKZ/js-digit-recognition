@@ -37,7 +37,6 @@ var Layer = (function () {
         for (var i = 0; i < values.length; i++) {
             outputUnits[i] = new Unit_1.Unit();
             var variableUnits = [new Unit_1.Unit(1.0)];
-            // TODO: Check if slicing works correctly
             neurons[i] = new Neuron_1.Neuron(values.slice(i, i + 1), outputUnits[i], variableUnits);
         }
         return new Layer(neurons, outputUnits);
