@@ -25,18 +25,18 @@ var Layer = (function () {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
      * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
      * @since 0.0.1
      */
-    Layer.fromUnits = function (units, neuronType) {
-        if (neuronType === void 0) { neuronType = Neuron_1.Neuron; }
+    Layer.fromUnits = function (units, config, previousLayer) {
         var neurons = [];
         var outputUnits = [];
         for (var i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit_1.Unit();
-            var variableUnits = new Unit_1.Unit(1.0);
-            switch (typeof neuronType) {
+            var variableUnits = new Unit_1.Unit(config.generateCoefficient());
+            switch (typeof config.neuronType) {
                 case typeof SigmoidalNeuron_1.SigmoidalNeuron:
                     neurons[i] = new SigmoidalNeuron_1.SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
                     break;
@@ -47,28 +47,37 @@ var Layer = (function () {
                     throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
             }
         }
-        return new Layer(neurons, outputUnits);
+        return new Layer(neurons, outputUnits, previousLayer);
     };
     /**
-     * Generates a layer of neurons using the previous layer as the input provider and the neuron count supplied. If
-     * neuronCount is 1 this layer can be considered an output layer. The value for the variable units is determined
-     * randomly in range from 0.5 to -0.5
+     * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
+     * supplied. The value for the variable units is determined randomly, check the code to see how the value for
+     * variable `coefficient` is calculated.
+     * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
      * @since 0.0.2 Added type for `variableUnits`
      * @since 0.0.1
      */
-    Layer.fromLayer = function (neuronCount, previousLayer) {
-        var neurons = [];
-        var outputUnits = [];
-        for (var i = 0; i < neuronCount; i++) {
-            outputUnits[i] = new Unit_1.Unit();
-            var variableUnits = [];
-            var inputUnitsLength = previousLayer.getOutputUnits().length;
-            for (var k = 0; k < inputUnitsLength + 1; k++) {
-                variableUnits.push(new Unit_1.Unit((Math.random() - 0.5) / 4));
-            }
-            neurons[i] = new Neuron_1.Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
+    Layer.fromLayer = function (config, previousLayer) {
+        switch (typeof config.neuronType) {
+            case typeof SigmoidalNeuron_1.SigmoidalNeuron:
+                return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
+            case typeof Neuron_1.Neuron:
+                var neurons = [];
+                var outputUnits = [];
+                var neuronCount = config.neuronCount;
+                for (var i = 0; i < neuronCount; i++) {
+                    outputUnits[i] = new Unit_1.Unit();
+                    var variableUnits = [];
+                    var inputUnitsLength = previousLayer.getOutputUnits().length;
+                    for (var k = 0; k < inputUnitsLength + 1; k++) {
+                        variableUnits.push(new Unit_1.Unit(config.generateCoefficient()));
+                    }
+                    neurons[i] = new Neuron_1.Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
+                }
+                return new Layer(neurons, outputUnits, previousLayer);
+            default:
+                throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
         }
-        return new Layer(neurons, outputUnits, previousLayer);
     };
     /**
      * Trigger the forward pass. Runs the forward pass on all of the neurons in the layer forcing them to update the

@@ -7,16 +7,27 @@ import {SigmoidalNeuron} from './neurons/SigmoidalNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 
 /**
  * Interface used to resolve the issue with complex type hinting in TypeScript when passing a class as a method
  * parameter. Used in Layer.fromUnits() for the `neuronType` parameter.
+ * @since 0.0.5 Add `export` keyword
  * @since 0.0.4
  */
-interface INeuronTypeParameter {
+export interface INeuronTypeParameter {
     new (...args: any[]): Neuron;
+}
+
+/**
+ * An interface used for configuration of the layer
+ * @since 0.0.5
+ */
+export interface ILayerConfiguration {
+    neuronType: INeuronTypeParameter;
+    generateCoefficient: () => number;
+    neuronCount?: number;
 }
 
 /**
@@ -69,17 +80,18 @@ export class Layer {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
      * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
      * @since 0.0.1
      */
-    public static fromUnits(units: Unit[], neuronType: INeuronTypeParameter = Neuron): Layer {
+    public static fromUnits(units: Unit[], config: ILayerConfiguration, previousLayer?: Layer): Layer {
         let neurons: Neuron[] = [];
         let outputUnits: Unit[] = [];
         for (let i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit();
-            let variableUnits = new Unit(1.0);
-            switch (typeof neuronType) {
+            let variableUnits = new Unit(config.generateCoefficient());
+            switch (typeof config.neuronType) {
                 case typeof SigmoidalNeuron:
                     neurons[i] = new SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
                     break;
@@ -90,29 +102,40 @@ export class Layer {
                     throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
             }
         }
-        return new Layer(neurons, outputUnits);
+        return new Layer(neurons, outputUnits, previousLayer);
     }
 
     /**
-     * Generates a layer of neurons using the previous layer as the input provider and the neuron count supplied. If
-     * neuronCount is 1 this layer can be considered an output layer. The value for the variable units is determined
-     * randomly in range from 0.5 to -0.5
+     * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
+     * supplied. The value for the variable units is determined randomly, check the code to see how the value for
+     * variable `coefficient` is calculated.
+     * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
      * @since 0.0.2 Added type for `variableUnits`
      * @since 0.0.1
      */
-    public static fromLayer(neuronCount: number, previousLayer: Layer): Layer {
-        let neurons: Neuron[] = [];
-        let outputUnits: Unit[] = [];
-        for (let i = 0; i < neuronCount; i++) {
-            outputUnits[i] = new Unit();
-            let variableUnits: Unit[] = [];
-            let inputUnitsLength = previousLayer.getOutputUnits().length;
-            for (let k = 0; k < inputUnitsLength + 1; k++) {
-                variableUnits.push(new Unit((Math.random() - 0.5) / 4));
-            }
-            neurons[i] = new Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
+    public static fromLayer(config: ILayerConfiguration, previousLayer: Layer): Layer {
+        switch (typeof config.neuronType) {
+            case typeof SigmoidalNeuron:
+                return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
+            case typeof Neuron:
+                let neurons: Neuron[] = [];
+                let outputUnits: Unit[] = [];
+                let neuronCount = config.neuronCount;
+                for (let i = 0; i < neuronCount; i++) {
+
+                    outputUnits[i] = new Unit();
+                    let variableUnits: Unit[] = [];
+                    let inputUnitsLength = previousLayer.getOutputUnits().length;
+                    for (let k = 0; k < inputUnitsLength + 1; k++) {
+                        variableUnits.push(new Unit(config.generateCoefficient()));
+                    }
+                    neurons[i] = new Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
+
+                }
+                return new Layer(neurons, outputUnits, previousLayer);
+            default:
+                throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
         }
-        return new Layer(neurons, outputUnits, previousLayer);
     }
 
     /**
