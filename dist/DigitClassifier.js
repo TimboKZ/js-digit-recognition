@@ -1,6 +1,7 @@
 "use strict";
 var DataParser_1 = require('./DataParser');
 var NeuralNetwork_1 = require('./NeuralNetwork');
+var Neuron_1 = require('./neurons/Neuron');
 /**
  * A file containing all interfaces and classes related to the classifier matching images of handwritten digits to
  * their integer representation.
@@ -24,12 +25,16 @@ var MODIFIER = 5.0;
 var DigitClassifier = (function () {
     /**
      * DigitClassifier constructor, mirrors that of a NeuralNetwork, except output count is always
-     * @since 0.0.3 Change type of `hiddenLayers` from `number[]` to `ILayerConfiguration[]`
+     * @since 0.0.3 Now uses the ILayerConfiguration interface
      * @since 0.0.1
      */
     function DigitClassifier(inputCount, hiddenLayers) {
         if (hiddenLayers === void 0) { hiddenLayers = []; }
-        this.neuralNetwork = new NeuralNetwork_1.NeuralNetwork(inputCount, 1, hiddenLayers);
+        var outputLayer = {
+            neuronCount: 1,
+            neuronType: Neuron_1.Neuron,
+        };
+        this.neuralNetwork = new NeuralNetwork_1.NeuralNetwork(inputCount, outputLayer, hiddenLayers);
     }
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.

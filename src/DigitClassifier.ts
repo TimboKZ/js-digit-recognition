@@ -1,5 +1,7 @@
 import {DataParser, IDigitMatrix} from './DataParser';
-import {ILayerConfiguration, NeuralNetwork} from './NeuralNetwork';
+import {ILayerConfiguration} from './Layer';
+import {NeuralNetwork} from './NeuralNetwork';
+import {Neuron} from './neurons/Neuron';
 /**
  * A file containing all interfaces and classes related to the classifier matching images of handwritten digits to
  * their integer representation.
@@ -31,11 +33,15 @@ export class DigitClassifier {
 
     /**
      * DigitClassifier constructor, mirrors that of a NeuralNetwork, except output count is always
-     * @since 0.0.3 Change type of `hiddenLayers` from `number[]` to `ILayerConfiguration[]`
+     * @since 0.0.3 Now uses the ILayerConfiguration interface
      * @since 0.0.1
      */
     public constructor(inputCount: number, hiddenLayers: ILayerConfiguration[] = []) {
-        this.neuralNetwork = new NeuralNetwork(inputCount, 1, hiddenLayers);
+        let outputLayer: ILayerConfiguration = {
+            neuronCount: 1,
+            neuronType: Neuron,
+        };
+        this.neuralNetwork = new NeuralNetwork(inputCount, outputLayer, hiddenLayers);
     }
 
     /**

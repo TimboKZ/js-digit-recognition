@@ -1,4 +1,4 @@
-import {Layer} from './Layer';
+import {ILayerConfiguration, Layer} from './Layer';
 import {Unit} from './Unit';
 import {Util} from './Util';
 /**
@@ -7,7 +7,7 @@ import {Util} from './Util';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.5
+ * @version 0.0.6
  */
 
 /**
@@ -40,23 +40,24 @@ export class NeuralNetwork {
 
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.6 Changed `number` to `ILayerConfiguration` in types of `outputLayer` and `hiddenLayers`
      * @since 0.0.4 Fixed a bug where the output layer would not get linked correctly
      * @since 0.0.3 Fixed a bug where layers were not interconnected
      * @since 0.0.1
      */
-    public constructor(inputCount: number, outputCount: number, hiddenLayers: number[] = []) {
+    public constructor(inputCount: number, outputLayer: ILayerConfiguration, hiddenLayers: ILayerConfiguration[] = []) {
         let inputUnits: Unit[] = [];
         for (let i = 0; i < inputCount; i++) {
             inputUnits[i] = new Unit();
         }
-        this.inputLayer = Layer.fromValues(inputUnits);
+        this.inputLayer = Layer.fromUnits(inputUnits);
         let lastLayer = this.inputLayer;
         for (let i = 0; i < hiddenLayers.length; i++) {
             let memoryLayer = lastLayer;
             lastLayer = Layer.fromLayer(hiddenLayers[i], lastLayer);
             memoryLayer.setNextLayer(lastLayer);
         }
-        this.outputLayer = Layer.fromLayer(outputCount, lastLayer);
+        this.outputLayer = Layer.fromLayer(outputLayer, lastLayer);
         lastLayer.setNextLayer(this.outputLayer);
         this.inputUnits = inputUnits;
         this.outputUnits = this.outputLayer.getOutputUnits();
