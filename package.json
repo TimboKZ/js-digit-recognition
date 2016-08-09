@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "buffer": "^4.9.0",
+    "colors": "^1.1.2",
     "fs": "0.0.2",
     "jpeg-js": "^0.2.0",
     "knuth-shuffle": "^1.0.1"
