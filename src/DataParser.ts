@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.8
+ * @version 0.0.9
  */
 
 /**
@@ -20,6 +20,13 @@ const IMAGE_PATH_FORMAT = 'raw_data/usps_{DIGIT}.jpg';
  * @since 0.0.1
  */
 export const IMAGE_SIZE = 16;
+
+/**
+ * Threshold that determines at what point does RGB value become 1. Everything below the threshold will be become 0
+ * in the matrix of the handwritten digit.
+ * @since 0.0.8
+ */
+const RGB_THRESHOLD = 40;
 
 /**
  * Default data set size, JPEG images in `raw_data` directory all have 1100 16x16 pixel images
@@ -172,6 +179,7 @@ export class DataParser {
 
     /**
      * Extract a sub-image from the supplied imageData
+     * @since 0.0.8 Now converts RGB representation of pixels into binary, where 1 is white and 0 is black
      * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
      */
@@ -185,7 +193,7 @@ export class DataParser {
         for (let row = 0; row < size; row++) {
             for (let column = 0; column < size; column++) {
                 let imageDataIndex = DataParser.coordinatesToIndex(row + startX, column + startY, columns - 1);
-                subImage[index] = imageData[imageDataIndex * 4];
+                subImage[index] = imageData[imageDataIndex * 4] > RGB_THRESHOLD ? 1 : 0;
                 index++;
             }
         }
@@ -228,12 +236,16 @@ export class DataParser {
 
     /**
      * Prints out an image from an array of greyscale pixels
+     * @since 0.0.8 Tweak default values for arguments
      * @since 0.0.6
      */
-    public static printImage(imageData: number[], size: number, threshold: number, symbol: string = '$$') {
+    public static printImage(imageData: number[],
+                             size: number = IMAGE_SIZE,
+                             threshold: number = 0.5,
+                             symbol: string = '0') {
         let output = '';
         for (let i = 0; i < imageData.length; i++) {
-            output += imageData[i] > threshold ? symbol : '  ';
+            output += imageData[i] > threshold ? symbol : ' ';
             if (i % size === 0) {
                 console.log(output);
                 output = '';
