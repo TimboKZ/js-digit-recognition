@@ -14,9 +14,9 @@ import {Neuron} from './Neuron';
  * Class representing the log-sigmoidal neuron
  * @since 0.0.1
  */
-export class SigmoidalNeuron extends Neuron {
+export class SigmoidNeuron extends Neuron {
     /**
-     * SigmoidalNeuron constructor. Similar to that of the base Neuron class but accepts singular object instead of
+     * SigmoidNeuron constructor. Similar to that of the base Neuron class but accepts singular object instead of
      * arrays
      * @since 0.0.2 Now uses super()
      * @since 0.0.1
@@ -40,10 +40,12 @@ export class SigmoidalNeuron extends Neuron {
      * @since 0.0.1
      */
     public backward(stepSize?: number) {
+        console.log(stepSize);
         let sigmaValue = this.sigmaWrapper();
         let gradient = this.variableUnits[0].value * sigmaValue * (1 - sigmaValue);
         this.inputUnits[0].gradient = gradient * this.outputUnit.gradient;
         if (stepSize) {
+            console.log('ADJ');
             this.variableUnits[0].value += stepSize * this.variableUnits[0].gradient;
         }
     }

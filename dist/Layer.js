@@ -1,7 +1,7 @@
 "use strict";
 var Unit_1 = require('./Unit');
 var Neuron_1 = require('./neurons/Neuron');
-var SigmoidalNeuron_1 = require('./neurons/SigmoidalNeuron');
+var SigmoidNeuron_1 = require('./neurons/SigmoidNeuron');
 /**
  * Class representing the base layer, used mostly for hidden layers
  * @since 0.0.1
@@ -24,7 +24,7 @@ var Layer = (function () {
      * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
      * types of neurons are:
      * - Neuron (linear neuron)
-     * - SigmoidalNeuron (log-sigmoidal neuron)
+     * - SigmoidNeuron (log-sigmoidal neuron)
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
@@ -38,10 +38,8 @@ var Layer = (function () {
             outputUnits[i] = new Unit_1.Unit();
             var variableUnits = new Unit_1.Unit(config.coefficientGenerator());
             switch (config.neuronType) {
-                case SigmoidalNeuron_1.SigmoidalNeuron:
-                    console.log(typeof config.neuronType);
-                    console.log(typeof SigmoidalNeuron_1.SigmoidalNeuron);
-                    neurons[i] = new SigmoidalNeuron_1.SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
+                case SigmoidNeuron_1.SigmoidNeuron:
+                    neurons[i] = new SigmoidNeuron_1.SigmoidNeuron(units[i], outputUnits[i], variableUnits);
                     break;
                 case Neuron_1.Neuron:
                     neurons[i] = new Neuron_1.Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
@@ -63,7 +61,7 @@ var Layer = (function () {
      */
     Layer.fromLayer = function (config, previousLayer) {
         switch (config.neuronType) {
-            case SigmoidalNeuron_1.SigmoidalNeuron:
+            case SigmoidNeuron_1.SigmoidNeuron:
                 return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
             case Neuron_1.Neuron:
                 var neurons = [];

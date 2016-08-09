@@ -1,6 +1,6 @@
 import {Unit} from './Unit';
 import {Neuron} from './neurons/Neuron';
-import {SigmoidalNeuron} from './neurons/SigmoidalNeuron';
+import {SigmoidNeuron} from './neurons/SigmoidNeuron';
 /**
  * File containing all interfaces and classes related to the representation of a Neuron layer
  *
@@ -80,7 +80,7 @@ export class Layer {
      * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
      * types of neurons are:
      * - Neuron (linear neuron)
-     * - SigmoidalNeuron (log-sigmoidal neuron)
+     * - SigmoidNeuron (log-sigmoidal neuron)
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
@@ -94,10 +94,8 @@ export class Layer {
             outputUnits[i] = new Unit();
             let variableUnits = new Unit(config.coefficientGenerator());
             switch (config.neuronType) {
-                case SigmoidalNeuron:
-                    console.log(typeof config.neuronType);
-                    console.log(typeof SigmoidalNeuron);
-                    neurons[i] = new SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
+                case SigmoidNeuron:
+                    neurons[i] = new SigmoidNeuron(units[i], outputUnits[i], variableUnits);
                     break;
                 case Neuron:
                     neurons[i] = new Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
@@ -120,7 +118,7 @@ export class Layer {
      */
     public static fromLayer(config: ILayerConfiguration, previousLayer: Layer): Layer {
         switch (config.neuronType) {
-            case SigmoidalNeuron:
+            case SigmoidNeuron:
                 return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
             case Neuron:
                 let neurons: Neuron[] = [];

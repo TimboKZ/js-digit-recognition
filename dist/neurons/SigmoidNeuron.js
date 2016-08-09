@@ -18,22 +18,22 @@ var Neuron_1 = require('./Neuron');
  * Class representing the log-sigmoidal neuron
  * @since 0.0.1
  */
-var SigmoidalNeuron = (function (_super) {
-    __extends(SigmoidalNeuron, _super);
+var SigmoidNeuron = (function (_super) {
+    __extends(SigmoidNeuron, _super);
     /**
-     * SigmoidalNeuron constructor. Similar to that of the base Neuron class but accepts singular object instead of
+     * SigmoidNeuron constructor. Similar to that of the base Neuron class but accepts singular object instead of
      * arrays
      * @since 0.0.2 Now uses super()
      * @since 0.0.1
      */
-    function SigmoidalNeuron(inputUnit, outputUnit, variable) {
+    function SigmoidNeuron(inputUnit, outputUnit, variable) {
         _super.call(this, [inputUnit], outputUnit, [variable]);
     }
     /**
      * Forward pass logic. Uses sigmoid function on a single input to calculate the output
      * @since 0.0.1
      */
-    SigmoidalNeuron.prototype.forward = function () {
+    SigmoidNeuron.prototype.forward = function () {
         this.outputUnit.value = this.sigmaWrapper();
     };
     /**
@@ -42,11 +42,13 @@ var SigmoidalNeuron = (function (_super) {
      * @since 0.0.2 Fixed incorrect variable being used
      * @since 0.0.1
      */
-    SigmoidalNeuron.prototype.backward = function (stepSize) {
+    SigmoidNeuron.prototype.backward = function (stepSize) {
+        console.log(stepSize);
         var sigmaValue = this.sigmaWrapper();
         var gradient = this.variableUnits[0].value * sigmaValue * (1 - sigmaValue);
         this.inputUnits[0].gradient = gradient * this.outputUnit.gradient;
         if (stepSize) {
+            console.log('ADJ');
             this.variableUnits[0].value += stepSize * this.variableUnits[0].gradient;
         }
     };
@@ -54,10 +56,10 @@ var SigmoidalNeuron = (function (_super) {
      * Function calculating sigma multiplying the input value by a coefficient stored in the variable unit
      * @since 0.0.1
      */
-    SigmoidalNeuron.prototype.sigmaWrapper = function () {
+    SigmoidNeuron.prototype.sigmaWrapper = function () {
         return Util_1.Util.sigma(this.inputUnits[0].value * this.variableUnits[0].value);
     };
-    return SigmoidalNeuron;
+    return SigmoidNeuron;
 }(Neuron_1.Neuron));
-exports.SigmoidalNeuron = SigmoidalNeuron;
-//# sourceMappingURL=SigmoidalNeuron.js.map
+exports.SigmoidNeuron = SigmoidNeuron;
+//# sourceMappingURL=SigmoidNeuron.js.map
