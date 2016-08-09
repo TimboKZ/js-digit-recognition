@@ -3,14 +3,6 @@ var Unit_1 = require('./Unit');
 var Neuron_1 = require('./neurons/Neuron');
 var SigmoidalNeuron_1 = require('./neurons/SigmoidalNeuron');
 /**
- * File containing all interfaces and classes related to the representation of a Neuron layer
- *
- * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
- * @copyright 2016
- * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.3
- */
-/**
  * Class representing the base layer, used mostly for hidden layers
  * @since 0.0.1
  */
@@ -33,17 +25,18 @@ var Layer = (function () {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
      * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
      * @since 0.0.1
      */
     Layer.fromUnits = function (units, neuronType) {
-        if (neuronType === void 0) { neuronType = typeof Neuron_1.Neuron; }
+        if (neuronType === void 0) { neuronType = Neuron_1.Neuron; }
         var neurons = [];
         var outputUnits = [];
         for (var i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit_1.Unit();
             var variableUnits = new Unit_1.Unit(1.0);
-            switch (neuronType) {
+            switch (typeof neuronType) {
                 case typeof SigmoidalNeuron_1.SigmoidalNeuron:
                     neurons[i] = new SigmoidalNeuron_1.SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
                     break;

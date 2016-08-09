@@ -7,8 +7,17 @@ import {SigmoidalNeuron} from './neurons/SigmoidalNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.3
+ * @version 0.0.4
  */
+
+/**
+ * Interface used to resolve the issue with complex type hinting in TypeScript when passing a class as a method
+ * parameter. Used in Layer.fromUnits() for the `neuronType` parameter.
+ * @since 0.0.4
+ */
+interface INeuronTypeParameter {
+    new (...args: any[]): Neuron;
+}
 
 /**
  * Class representing the base layer, used mostly for hidden layers
@@ -60,16 +69,17 @@ export class Layer {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
      * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
      * @since 0.0.1
      */
-    public static fromUnits(units: Unit[], neuronType: string = typeof Neuron): Layer {
+    public static fromUnits(units: Unit[], neuronType: INeuronTypeParameter = Neuron): Layer {
         let neurons: Neuron[] = [];
         let outputUnits: Unit[] = [];
         for (let i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit();
             let variableUnits = new Unit(1.0);
-            switch (neuronType) {
+            switch (typeof neuronType) {
                 case typeof SigmoidalNeuron:
                     neurons[i] = new SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
                     break;
