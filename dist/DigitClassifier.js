@@ -8,7 +8,7 @@ var NeuralNetwork_1 = require('./NeuralNetwork');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 /**
  * Scales the output of the NeuralNetwork, i.e. if your expected output is 8 and `MODIFIER` is 5, neural network
@@ -24,12 +24,14 @@ var MODIFIER = 5.0;
 var DigitClassifier = (function () {
     /**
      * DigitClassifier constructor, mirrors that of a NeuralNetwork, except output count is always
+     * @since 0.0.5 Now stores `outputLayer` in
      * @since 0.0.4 Output layer is now an injected dependency
      * @since 0.0.3 Now uses the ILayerConfiguration interface
      * @since 0.0.1
      */
     function DigitClassifier(inputCount, outputLayer, hiddenLayers) {
         if (hiddenLayers === void 0) { hiddenLayers = []; }
+        this.outputLayerConfig = outputLayer;
         this.neuralNetwork = new NeuralNetwork_1.NeuralNetwork(inputCount, outputLayer, hiddenLayers);
     }
     /**
@@ -72,6 +74,7 @@ var DigitClassifier = (function () {
     };
     /**
      * Trains the neural network using provided set of matrices. Repeats the process `iterationCount` times.
+     * @since 0.0.5 Now works with output layers with neuron count higher than 1
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
      */
@@ -79,7 +82,11 @@ var DigitClassifier = (function () {
         var _this = this;
         for (var i = 0; i < iterationCount; i++) {
             digitMatrices.forEach(function (matrix) {
-                _this.neuralNetwork.trainWith(matrix.matrix, [matrix.digit * MODIFIER], stepSize);
+                var expectedOutput = [];
+                for (var i_1 = 0; i_1 < _this.outputLayerConfig.neuronCount; i_1++) {
+                    expectedOutput.push(matrix.digit * MODIFIER);
+                }
+                _this.neuralNetwork.trainWith(matrix.matrix, expectedOutput, stepSize);
             });
         }
     };

@@ -8,7 +8,7 @@ import {NeuralNetwork} from './NeuralNetwork';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 
 /**
@@ -31,7 +31,14 @@ export class DigitClassifier {
     private neuralNetwork: NeuralNetwork;
 
     /**
+     * Stored output layer configuration
+     * @since 0.0.5
+     */
+    private outputLayerConfig: ILayerConfiguration;
+
+    /**
      * DigitClassifier constructor, mirrors that of a NeuralNetwork, except output count is always
+     * @since 0.0.5 Now stores `outputLayer` in
      * @since 0.0.4 Output layer is now an injected dependency
      * @since 0.0.3 Now uses the ILayerConfiguration interface
      * @since 0.0.1
@@ -39,6 +46,7 @@ export class DigitClassifier {
     public constructor(inputCount: number,
                        outputLayer: ILayerConfiguration,
                        hiddenLayers: ILayerConfiguration[] = []) {
+        this.outputLayerConfig = outputLayer;
         this.neuralNetwork = new NeuralNetwork(inputCount, outputLayer, hiddenLayers);
     }
 
@@ -83,13 +91,18 @@ export class DigitClassifier {
 
     /**
      * Trains the neural network using provided set of matrices. Repeats the process `iterationCount` times.
+     * @since 0.0.5 Now works with output layers with neuron count higher than 1
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
      */
     public train(digitMatrices: IDigitMatrix[], stepSize: number, iterationCount: number) {
         for (let i = 0; i < iterationCount; i++) {
             digitMatrices.forEach((matrix: IDigitMatrix) => {
-                this.neuralNetwork.trainWith(matrix.matrix, [matrix.digit * MODIFIER], stepSize);
+                let expectedOutput: number[] = [];
+                for (let i = 0; i < this.outputLayerConfig.neuronCount; i++) {
+                    expectedOutput.push(matrix.digit * MODIFIER);
+                }
+                this.neuralNetwork.trainWith(matrix.matrix, expectedOutput, stepSize);
             });
         }
     }
