@@ -7,7 +7,7 @@ import {SigmoidalNeuron} from './neurons/SigmoidalNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.5
+ * @version 0.0.6
  */
 
 /**
@@ -22,11 +22,12 @@ export interface INeuronTypeParameter {
 
 /**
  * An interface used for configuration of the layer
+ * @since 0.0.6 Renamed `generateCoefficient` to `coefficientGenerator`
  * @since 0.0.5
  */
 export interface ILayerConfiguration {
     neuronType: INeuronTypeParameter;
-    generateCoefficient: () => number;
+    coefficientGenerator: () => number;
     neuronCount?: number;
 }
 
@@ -90,7 +91,7 @@ export class Layer {
         let outputUnits: Unit[] = [];
         for (let i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit();
-            let variableUnits = new Unit(config.generateCoefficient());
+            let variableUnits = new Unit(config.coefficientGenerator());
             switch (typeof config.neuronType) {
                 case typeof SigmoidalNeuron:
                     neurons[i] = new SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
@@ -127,7 +128,7 @@ export class Layer {
                     let variableUnits: Unit[] = [];
                     let inputUnitsLength = previousLayer.getOutputUnits().length;
                     for (let k = 0; k < inputUnitsLength + 1; k++) {
-                        variableUnits.push(new Unit(config.generateCoefficient()));
+                        variableUnits.push(new Unit(config.coefficientGenerator()));
                     }
                     neurons[i] = new Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
 

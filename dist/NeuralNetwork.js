@@ -31,7 +31,7 @@ var NeuralNetwork = (function () {
             inputUnits[i] = new Unit_1.Unit();
         }
         var inputLayerConfig = {
-            generateCoefficient: function () { return 1.0; },
+            coefficientGenerator: function () { return 1.0; },
             neuronType: Neuron_1.Neuron,
         };
         this.inputLayer = Layer_1.Layer.fromUnits(inputUnits, inputLayerConfig);

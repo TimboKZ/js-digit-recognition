@@ -53,7 +53,7 @@ export class NeuralNetwork {
             inputUnits[i] = new Unit();
         }
         let inputLayerConfig: ILayerConfiguration = {
-            generateCoefficient: () => 1.0,
+            coefficientGenerator: () => 1.0,
             neuronType: Neuron,
         };
         this.inputLayer = Layer.fromUnits(inputUnits, inputLayerConfig);

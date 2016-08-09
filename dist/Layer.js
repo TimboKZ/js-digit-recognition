@@ -35,7 +35,7 @@ var Layer = (function () {
         var outputUnits = [];
         for (var i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit_1.Unit();
-            var variableUnits = new Unit_1.Unit(config.generateCoefficient());
+            var variableUnits = new Unit_1.Unit(config.coefficientGenerator());
             switch (typeof config.neuronType) {
                 case typeof SigmoidalNeuron_1.SigmoidalNeuron:
                     neurons[i] = new SigmoidalNeuron_1.SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
@@ -70,7 +70,7 @@ var Layer = (function () {
                     var variableUnits = [];
                     var inputUnitsLength = previousLayer.getOutputUnits().length;
                     for (var k = 0; k < inputUnitsLength + 1; k++) {
-                        variableUnits.push(new Unit_1.Unit(config.generateCoefficient()));
+                        variableUnits.push(new Unit_1.Unit(config.coefficientGenerator()));
                     }
                     neurons[i] = new Neuron_1.Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
                 }
