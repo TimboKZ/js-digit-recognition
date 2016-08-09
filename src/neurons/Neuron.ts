@@ -5,7 +5,7 @@ import {Unit} from '../Unit';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.8
+ * @version 0.0.9
  */
 
 /**
@@ -49,6 +49,7 @@ export class Neuron {
      * Logic for the forward pass, similar to:
      * output = ax + by + ... + cz + d
      * Where a,b,...c,d are variable units stored in the neuron and x,y,...z are values of input units
+     * @since 0.0.9 Forward pass now resets gradient
      * @since 0.0.8 Removed ReLU
      * @since 0.0.6 Added ReLU
      * @since 0.0.4 Fixed a bug where `i` would be compared to Unit[]
@@ -57,11 +58,13 @@ export class Neuron {
     public forward() {
         let output = 0;
         for (let i = 0; i < this.variableUnits.length; i++) {
+            let variableUnit = this.variableUnits[i];
+            variableUnit.gradient = 0;
             let coefficient = 1.0;
             if (this.inputUnits[i]) {
                 coefficient = this.inputUnits[i].value;
             }
-            output += coefficient * this.variableUnits[i].value;
+            output += coefficient * variableUnit.value;
         }
         this.outputUnit.value = output;
     }
@@ -69,6 +72,7 @@ export class Neuron {
     /**
      * Logic for the backward pass, first backdrops the gradients to the input units and then adjusts the stored
      * variable units using the step size
+     * @since 0.0.9 Added `adjustment`
      * @since 0.0.8 Removed ReLU
      * @since 0.0.6 Minor tweaks to logic
      * @since 0.0.5 Added a rectifier for inputUnit.gradient
@@ -80,11 +84,12 @@ export class Neuron {
         for (let i = 0; i < this.variableUnits.length; i++) {
             let variableUnit = this.variableUnits[i];
             let coefficient = 1.0;
+            let adjustment = 0.0;
             if (this.inputUnits[i]) {
-                let inputUnit = this.inputUnits[i];
-                coefficient = inputUnit.value;
+                coefficient = this.inputUnits[i].value;
+                adjustment = variableUnit.value;
             }
-            variableUnit.gradient = coefficient * this.outputUnit.gradient;
+            variableUnit.gradient += coefficient * this.outputUnit.gradient - adjustment;
             if (stepSize) {
                 variableUnit.value += stepSize * variableUnit.gradient;
             }
