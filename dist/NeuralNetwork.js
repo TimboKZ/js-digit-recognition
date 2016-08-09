@@ -1,13 +1,14 @@
 "use strict";
 var Layer_1 = require('./Layer');
 var Unit_1 = require('./Unit');
+var Util_1 = require('./Util');
 /**
  * File containing all classes and interfaces related to the NeuralNetwork object
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 /**
  * The neural network class that manages Layers of Neurons
@@ -42,6 +43,7 @@ var NeuralNetwork = (function () {
      * Trains the network using some input data and the expected output data, adjusting the variable inputs in the
      * neurons by the step size supplied. The `outputOperation` function is applied to the output before comparing
      * it to the expected output.
+     * @since 0.0.5 Now uses the sigma function to calculate the pull
      * @since 0.0.1
      */
     NeuralNetwork.prototype.trainWith = function (inputData, outputData, stepSize, outputOperation) {
@@ -58,11 +60,12 @@ var NeuralNetwork = (function () {
                 output = outputOperation(output);
             }
             var pull = 0;
+            var difference = Math.abs(expectedOutput - output);
             if (output < expectedOutput) {
-                pull = 1;
+                pull = 1 + Util_1.Util.sigma(difference);
             }
             else if (output > expectedOutput) {
-                pull = -1;
+                pull = -1 - Util_1.Util.sigma(difference);
             }
             this.outputUnits[i].gradient = pull;
         }

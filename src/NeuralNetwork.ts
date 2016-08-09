@@ -1,12 +1,13 @@
 import {Layer} from './Layer';
 import {Unit} from './Unit';
+import {Util} from './Util';
 /**
  * File containing all classes and interfaces related to the NeuralNetwork object
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.4
+ * @version 0.0.5
  */
 
 /**
@@ -65,6 +66,7 @@ export class NeuralNetwork {
      * Trains the network using some input data and the expected output data, adjusting the variable inputs in the
      * neurons by the step size supplied. The `outputOperation` function is applied to the output before comparing
      * it to the expected output.
+     * @since 0.0.5 Now uses the sigma function to calculate the pull
      * @since 0.0.1
      */
     public trainWith(inputData: number[],
@@ -84,10 +86,11 @@ export class NeuralNetwork {
                 output = outputOperation(output);
             }
             let pull = 0;
+            let difference = Math.abs(expectedOutput - output);
             if (output < expectedOutput) {
-                pull = 1;
+                pull = 1 + Util.sigma(difference);
             } else if (output > expectedOutput) {
-                pull = -1;
+                pull = -1 - Util.sigma(difference);
             }
             this.outputUnits[i].gradient = pull;
         }
