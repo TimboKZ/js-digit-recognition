@@ -2,13 +2,14 @@
 var Layer_1 = require('./Layer');
 var Unit_1 = require('./Unit');
 var Util_1 = require('./Util');
+var Neuron_1 = require('./neurons/Neuron');
 /**
  * File containing all classes and interfaces related to the NeuralNetwork object
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.6
+ * @version 0.0.7
  */
 /**
  * The neural network class that manages Layers of Neurons
@@ -17,6 +18,7 @@ var Util_1 = require('./Util');
 var NeuralNetwork = (function () {
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.7 Added `inputLayerConfig`
      * @since 0.0.6 Changed `number` to `ILayerConfiguration` in types of `outputLayer` and `hiddenLayers`
      * @since 0.0.4 Fixed a bug where the output layer would not get linked correctly
      * @since 0.0.3 Fixed a bug where layers were not interconnected
@@ -28,7 +30,11 @@ var NeuralNetwork = (function () {
         for (var i = 0; i < inputCount; i++) {
             inputUnits[i] = new Unit_1.Unit();
         }
-        this.inputLayer = Layer_1.Layer.fromUnits(inputUnits);
+        var inputLayerConfig = {
+            generateCoefficient: function () { return 1.0; },
+            neuronType: Neuron_1.Neuron,
+        };
+        this.inputLayer = Layer_1.Layer.fromUnits(inputUnits, inputLayerConfig);
         var lastLayer = this.inputLayer;
         for (var i = 0; i < hiddenLayers.length; i++) {
             var memoryLayer = lastLayer;

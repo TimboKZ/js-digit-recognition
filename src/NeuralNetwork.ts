@@ -1,13 +1,14 @@
 import {ILayerConfiguration, Layer} from './Layer';
 import {Unit} from './Unit';
 import {Util} from './Util';
+import {Neuron} from './neurons/Neuron';
 /**
  * File containing all classes and interfaces related to the NeuralNetwork object
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.6
+ * @version 0.0.7
  */
 
 /**
@@ -40,6 +41,7 @@ export class NeuralNetwork {
 
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.7 Added `inputLayerConfig`
      * @since 0.0.6 Changed `number` to `ILayerConfiguration` in types of `outputLayer` and `hiddenLayers`
      * @since 0.0.4 Fixed a bug where the output layer would not get linked correctly
      * @since 0.0.3 Fixed a bug where layers were not interconnected
@@ -50,7 +52,11 @@ export class NeuralNetwork {
         for (let i = 0; i < inputCount; i++) {
             inputUnits[i] = new Unit();
         }
-        this.inputLayer = Layer.fromUnits(inputUnits);
+        let inputLayerConfig: ILayerConfiguration = {
+            generateCoefficient: () => 1.0,
+            neuronType: Neuron,
+        };
+        this.inputLayer = Layer.fromUnits(inputUnits, inputLayerConfig);
         let lastLayer = this.inputLayer;
         for (let i = 0; i < hiddenLayers.length; i++) {
             let memoryLayer = lastLayer;
