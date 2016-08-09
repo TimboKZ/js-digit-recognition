@@ -7,7 +7,7 @@ import {SigmoidalNeuron} from './neurons/SigmoidalNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.6
+ * @version 0.0.7
  */
 
 /**
@@ -81,6 +81,7 @@ export class Layer {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
      * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
@@ -92,11 +93,13 @@ export class Layer {
         for (let i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit();
             let variableUnits = new Unit(config.coefficientGenerator());
-            switch (typeof config.neuronType) {
-                case typeof SigmoidalNeuron:
+            switch (config.neuronType) {
+                case SigmoidalNeuron:
+                    console.log(typeof config.neuronType);
+                    console.log(typeof SigmoidalNeuron);
                     neurons[i] = new SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
                     break;
-                case typeof Neuron:
+                case Neuron:
                     neurons[i] = new Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
                     break;
                 default:
@@ -110,15 +113,16 @@ export class Layer {
      * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
      * supplied. The value for the variable units is determined randomly, check the code to see how the value for
      * variable `coefficient` is calculated.
+     * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
      * @since 0.0.2 Added type for `variableUnits`
      * @since 0.0.1
      */
     public static fromLayer(config: ILayerConfiguration, previousLayer: Layer): Layer {
-        switch (typeof config.neuronType) {
-            case typeof SigmoidalNeuron:
+        switch (config.neuronType) {
+            case SigmoidalNeuron:
                 return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
-            case typeof Neuron:
+            case Neuron:
                 let neurons: Neuron[] = [];
                 let outputUnits: Unit[] = [];
                 let neuronCount = config.neuronCount;

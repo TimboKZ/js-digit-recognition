@@ -25,6 +25,7 @@ var Layer = (function () {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
      * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
@@ -36,11 +37,13 @@ var Layer = (function () {
         for (var i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit_1.Unit();
             var variableUnits = new Unit_1.Unit(config.coefficientGenerator());
-            switch (typeof config.neuronType) {
-                case typeof SigmoidalNeuron_1.SigmoidalNeuron:
+            switch (config.neuronType) {
+                case SigmoidalNeuron_1.SigmoidalNeuron:
+                    console.log(typeof config.neuronType);
+                    console.log(typeof SigmoidalNeuron_1.SigmoidalNeuron);
                     neurons[i] = new SigmoidalNeuron_1.SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
                     break;
-                case typeof Neuron_1.Neuron:
+                case Neuron_1.Neuron:
                     neurons[i] = new Neuron_1.Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
                     break;
                 default:
@@ -53,15 +56,16 @@ var Layer = (function () {
      * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
      * supplied. The value for the variable units is determined randomly, check the code to see how the value for
      * variable `coefficient` is calculated.
+     * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
      * @since 0.0.2 Added type for `variableUnits`
      * @since 0.0.1
      */
     Layer.fromLayer = function (config, previousLayer) {
-        switch (typeof config.neuronType) {
-            case typeof SigmoidalNeuron_1.SigmoidalNeuron:
+        switch (config.neuronType) {
+            case SigmoidalNeuron_1.SigmoidalNeuron:
                 return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
-            case typeof Neuron_1.Neuron:
+            case Neuron_1.Neuron:
                 var neurons = [];
                 var outputUnits = [];
                 var neuronCount = config.neuronCount;
