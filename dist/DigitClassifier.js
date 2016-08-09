@@ -1,7 +1,6 @@
 "use strict";
 var DataParser_1 = require('./DataParser');
 var NeuralNetwork_1 = require('./NeuralNetwork');
-var Neuron_1 = require('./neurons/Neuron');
 /**
  * A file containing all interfaces and classes related to the classifier matching images of handwritten digits to
  * their integer representation.
@@ -9,7 +8,7 @@ var Neuron_1 = require('./neurons/Neuron');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.3
+ * @version 0.0.4
  */
 /**
  * Scales the output of the NeuralNetwork, i.e. if your expected output is 8 and `MODIFIER` is 5, neural network
@@ -25,15 +24,12 @@ var MODIFIER = 5.0;
 var DigitClassifier = (function () {
     /**
      * DigitClassifier constructor, mirrors that of a NeuralNetwork, except output count is always
+     * @since 0.0.4 Output layer is now an injected dependency
      * @since 0.0.3 Now uses the ILayerConfiguration interface
      * @since 0.0.1
      */
-    function DigitClassifier(inputCount, hiddenLayers) {
+    function DigitClassifier(inputCount, outputLayer, hiddenLayers) {
         if (hiddenLayers === void 0) { hiddenLayers = []; }
-        var outputLayer = {
-            neuronCount: 1,
-            neuronType: Neuron_1.Neuron,
-        };
         this.neuralNetwork = new NeuralNetwork_1.NeuralNetwork(inputCount, outputLayer, hiddenLayers);
     }
     /**
