@@ -1,6 +1,7 @@
 "use strict";
 var Unit_1 = require('./Unit');
 var Neuron_1 = require('./neurons/Neuron');
+var ReLUNeuron_1 = require('./neurons/ReLUNeuron');
 var SigmoidNeuron_1 = require('./neurons/SigmoidNeuron');
 /**
  * Class representing the base layer, used mostly for hidden layers
@@ -25,6 +26,7 @@ var Layer = (function () {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidNeuron (log-sigmoidal neuron)
+     * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
@@ -41,6 +43,9 @@ var Layer = (function () {
                 case SigmoidNeuron_1.SigmoidNeuron:
                     neurons[i] = new SigmoidNeuron_1.SigmoidNeuron(units[i], outputUnits[i], variableUnits);
                     break;
+                case ReLUNeuron_1.ReLUNeuron:
+                    neurons[i] = new ReLUNeuron_1.ReLUNeuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
+                    break;
                 case Neuron_1.Neuron:
                     neurons[i] = new Neuron_1.Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
                     break;
@@ -54,6 +59,7 @@ var Layer = (function () {
      * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
      * supplied. The value for the variable units is determined randomly, check the code to see how the value for
      * variable `coefficient` is calculated.
+     * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
      * @since 0.0.2 Added type for `variableUnits`
@@ -63,6 +69,7 @@ var Layer = (function () {
         switch (config.neuronType) {
             case SigmoidNeuron_1.SigmoidNeuron:
                 return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
+            case ReLUNeuron_1.ReLUNeuron:
             case Neuron_1.Neuron:
                 var neurons = [];
                 var outputUnits = [];
@@ -74,7 +81,7 @@ var Layer = (function () {
                     for (var k = 0; k < inputUnitsLength + 1; k++) {
                         variableUnits.push(new Unit_1.Unit(config.coefficientGenerator()));
                     }
-                    neurons[i] = new Neuron_1.Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
+                    neurons[i] = new config.neuronType(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
                 }
                 return new Layer(neurons, outputUnits, previousLayer);
             default:

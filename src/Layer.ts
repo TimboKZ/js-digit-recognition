@@ -1,5 +1,6 @@
 import {Unit} from './Unit';
 import {Neuron} from './neurons/Neuron';
+import {ReLUNeuron} from './neurons/ReLUNeuron';
 import {SigmoidNeuron} from './neurons/SigmoidNeuron';
 /**
  * File containing all interfaces and classes related to the representation of a Neuron layer
@@ -7,7 +8,7 @@ import {SigmoidNeuron} from './neurons/SigmoidNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.7
+ * @version 0.0.8
  */
 
 /**
@@ -81,6 +82,7 @@ export class Layer {
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidNeuron (log-sigmoidal neuron)
+     * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now accepts `previousLayer` as a parameter, ILayerConfiguration instead of `neuronType`
      * @since 0.0.4 The type of `neuronType` is now INeuronTypeParameter
@@ -97,6 +99,9 @@ export class Layer {
                 case SigmoidNeuron:
                     neurons[i] = new SigmoidNeuron(units[i], outputUnits[i], variableUnits);
                     break;
+                case ReLUNeuron:
+                    neurons[i] = new ReLUNeuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
+                    break;
                 case Neuron:
                     neurons[i] = new Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
                     break;
@@ -111,6 +116,7 @@ export class Layer {
      * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
      * supplied. The value for the variable units is determined randomly, check the code to see how the value for
      * variable `coefficient` is calculated.
+     * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
      * @since 0.0.2 Added type for `variableUnits`
@@ -120,6 +126,7 @@ export class Layer {
         switch (config.neuronType) {
             case SigmoidNeuron:
                 return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
+            case ReLUNeuron:
             case Neuron:
                 let neurons: Neuron[] = [];
                 let outputUnits: Unit[] = [];
@@ -132,7 +139,7 @@ export class Layer {
                     for (let k = 0; k < inputUnitsLength + 1; k++) {
                         variableUnits.push(new Unit(config.coefficientGenerator()));
                     }
-                    neurons[i] = new Neuron(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
+                    neurons[i] = new config.neuronType(previousLayer.getOutputUnits(), outputUnits[i], variableUnits);
 
                 }
                 return new Layer(neurons, outputUnits, previousLayer);
