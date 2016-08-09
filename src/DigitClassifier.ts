@@ -1,5 +1,5 @@
 import {DataParser, IDigitMatrix} from './DataParser';
-import {NeuralNetwork} from './NeuralNetwork';
+import {ILayerConfiguration, NeuralNetwork} from './NeuralNetwork';
 /**
  * A file containing all interfaces and classes related to the classifier matching images of handwritten digits to
  * their integer representation.
@@ -7,7 +7,7 @@ import {NeuralNetwork} from './NeuralNetwork';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 /**
@@ -31,15 +31,17 @@ export class DigitClassifier {
 
     /**
      * DigitClassifier constructor, mirrors that of a NeuralNetwork, except output count is always
+     * @since 0.0.3 Change type of `hiddenLayers` from `number[]` to `ILayerConfiguration[]`
      * @since 0.0.1
      */
-    public constructor(inputCount: number, hiddenLayers: number[] = []) {
+    public constructor(inputCount: number, hiddenLayers: ILayerConfiguration[] = []) {
         this.neuralNetwork = new NeuralNetwork(inputCount, 1, hiddenLayers);
     }
 
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.
      * Prints each test case if `print` is set to true.
+     * @since 0.0.3 Replace all `var` with `let` keywords
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
      */
@@ -56,7 +58,7 @@ export class DigitClassifier {
                 correctGuesses++;
             }
             if (print) {
-                var colors = require('colors/safe');
+                let colors = require('colors/safe');
                 console.log(
                     '[TEST]   Expected -> ' + matrix.digit + '   Actual -> ' + displayOutput + ' (' + parsedOutput + ')'
                 );

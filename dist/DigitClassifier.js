@@ -8,7 +8,7 @@ var NeuralNetwork_1 = require('./NeuralNetwork');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 /**
  * Scales the output of the NeuralNetwork, i.e. if your expected output is 8 and `MODIFIER` is 5, neural network
@@ -24,6 +24,7 @@ var MODIFIER = 5.0;
 var DigitClassifier = (function () {
     /**
      * DigitClassifier constructor, mirrors that of a NeuralNetwork, except output count is always
+     * @since 0.0.3 Change type of `hiddenLayers` from `number[]` to `ILayerConfiguration[]`
      * @since 0.0.1
      */
     function DigitClassifier(inputCount, hiddenLayers) {
@@ -33,6 +34,7 @@ var DigitClassifier = (function () {
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.
      * Prints each test case if `print` is set to true.
+     * @since 0.0.3 Replace all `var` with `let` keywords
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
      */
