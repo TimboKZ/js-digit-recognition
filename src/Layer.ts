@@ -1,12 +1,13 @@
-import {Neuron} from './Neuron';
 import {Unit} from './Unit';
+import {Neuron} from './neurons/Neuron';
+import {SigmoidalNeuron} from './neurons/SigmoidalNeuron';
 /**
  * File containing all interfaces and classes related to the representation of a Neuron layer
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 /**
@@ -54,17 +55,30 @@ export class Layer {
     }
 
     /**
-     * Generates a layer of neurons using an array of Units. Using this method to create a Layer makes it an Input
-     * Layer. Each unit is mapped 1-to-1 with a single Neuron.
+     * Generates a layer of neurons using an array of Units. Each unit is mapped 1-to-1 with a single Neuron.
+     * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
+     * types of neurons are:
+     * - Neuron (linear neuron)
+     * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
      * @since 0.0.1
      */
-    public static fromValues(values: Unit[]): Layer {
+    public static fromUnits(units: Unit[], neuronType: string = typeof Neuron): Layer {
         let neurons: Neuron[] = [];
         let outputUnits: Unit[] = [];
-        for (let i = 0; i < values.length; i++) {
+        for (let i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit();
-            let variableUnits = [new Unit(1.0)];
-            neurons[i] = new Neuron(values.slice(i, i + 1), outputUnits[i], variableUnits);
+            let variableUnits = new Unit(1.0);
+            switch (neuronType) {
+                case typeof SigmoidalNeuron:
+                    neurons[i] = new SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
+                    break;
+                case typeof Neuron:
+                    neurons[i] = new Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
+                    break;
+                default:
+                    throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
+            }
         }
         return new Layer(neurons, outputUnits);
     }

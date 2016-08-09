@@ -1,13 +1,14 @@
 "use strict";
-var Neuron_1 = require('./Neuron');
 var Unit_1 = require('./Unit');
+var Neuron_1 = require('./neurons/Neuron');
+var SigmoidalNeuron_1 = require('./neurons/SigmoidalNeuron');
 /**
  * File containing all interfaces and classes related to the representation of a Neuron layer
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 /**
  * Class representing the base layer, used mostly for hidden layers
@@ -27,17 +28,31 @@ var Layer = (function () {
         }
     }
     /**
-     * Generates a layer of neurons using an array of Units. Using this method to create a Layer makes it an Input
-     * Layer. Each unit is mapped 1-to-1 with a single Neuron.
+     * Generates a layer of neurons using an array of Units. Each unit is mapped 1-to-1 with a single Neuron.
+     * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
+     * types of neurons are:
+     * - Neuron (linear neuron)
+     * - SigmoidalNeuron (log-sigmoidal neuron)
+     * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
      * @since 0.0.1
      */
-    Layer.fromValues = function (values) {
+    Layer.fromUnits = function (units, neuronType) {
+        if (neuronType === void 0) { neuronType = typeof Neuron_1.Neuron; }
         var neurons = [];
         var outputUnits = [];
-        for (var i = 0; i < values.length; i++) {
+        for (var i = 0; i < units.length; i++) {
             outputUnits[i] = new Unit_1.Unit();
-            var variableUnits = [new Unit_1.Unit(1.0)];
-            neurons[i] = new Neuron_1.Neuron(values.slice(i, i + 1), outputUnits[i], variableUnits);
+            var variableUnits = new Unit_1.Unit(1.0);
+            switch (neuronType) {
+                case typeof SigmoidalNeuron_1.SigmoidalNeuron:
+                    neurons[i] = new SigmoidalNeuron_1.SigmoidalNeuron(units[i], outputUnits[i], variableUnits);
+                    break;
+                case typeof Neuron_1.Neuron:
+                    neurons[i] = new Neuron_1.Neuron(units.slice(i, i + 1), outputUnits[i], [variableUnits]);
+                    break;
+                default:
+                    throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
+            }
         }
         return new Layer(neurons, outputUnits);
     };
