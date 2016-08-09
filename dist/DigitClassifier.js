@@ -8,8 +8,15 @@ var NeuralNetwork_1 = require('./NeuralNetwork');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
+/**
+ * Scales the output of the NeuralNetwork, i.e. if your expected output is 8 and `MODIFIER` is 5, neural network
+ * will be trained to output 40 when the expected output is 5. Modifier is also applied during testing to scale down
+ * the answer.
+ * @since 0.0.2
+ */
+var MODIFIER = 5.0;
 /**
  * Class responsible for setting up, testing and training a neural network
  * @since 0.0.1
@@ -26,6 +33,7 @@ var DigitClassifier = (function () {
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.
      * Prints each test case if `print` is set to true.
+     * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
      */
     DigitClassifier.prototype.test = function (digitMatrices, outputOperation, print) {
@@ -34,7 +42,7 @@ var DigitClassifier = (function () {
         if (print === void 0) { print = false; }
         var correctGuesses = 0;
         digitMatrices.forEach(function (matrix) {
-            var output = _this.neuralNetwork.runWith(matrix.matrix)[0];
+            var output = _this.neuralNetwork.runWith(matrix.matrix)[0] / MODIFIER;
             var displayOutput = output.toFixed(4);
             var parsedOutput = outputOperation(output);
             var correct = parsedOutput === matrix.digit;
@@ -42,8 +50,16 @@ var DigitClassifier = (function () {
                 correctGuesses++;
             }
             if (print) {
+                var colors = require('colors/safe');
                 console.log('[TEST]   Expected -> ' + matrix.digit + '   Actual -> ' + displayOutput + ' (' + parsedOutput + ')');
-                console.log((correct ? '' : 'IN') + 'CORRECT GUESS');
+                var correctString = 'CORRECT GUESS';
+                if (correct) {
+                    correctString = colors.green(correctString);
+                }
+                else {
+                    correctString = colors.red('IN' + correctString);
+                }
+                console.log(correctString);
                 console.log('Image of the digit:');
                 DataParser_1.DataParser.printImage(matrix.matrix);
                 console.log();
@@ -53,13 +69,14 @@ var DigitClassifier = (function () {
     };
     /**
      * Trains the neural network using provided set of matrices. Repeats the process `iterationCount` times.
+     * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
      */
     DigitClassifier.prototype.train = function (digitMatrices, stepSize, iterationCount) {
         var _this = this;
         for (var i = 0; i < iterationCount; i++) {
             digitMatrices.forEach(function (matrix) {
-                _this.neuralNetwork.trainWith(matrix.matrix, [matrix.digit], stepSize);
+                _this.neuralNetwork.trainWith(matrix.matrix, [matrix.digit * MODIFIER], stepSize);
             });
         }
     };
