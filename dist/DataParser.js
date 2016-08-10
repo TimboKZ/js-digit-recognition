@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.9
+ * @version 0.1.0
  */
 "use strict";
 /**
@@ -169,10 +169,12 @@ var DataParser = (function () {
     };
     /**
      * Prints out an image from an array of greyscale pixels
+     * @since 0.1.0 `outputFunction` is now an injected dependency
      * @since 0.0.8 Tweak default values for arguments
      * @since 0.0.6
      */
-    DataParser.printImage = function (imageData, size, threshold, symbol) {
+    DataParser.printImage = function (imageData, outputFunction, size, threshold, symbol) {
+        if (outputFunction === void 0) { outputFunction = console.log; }
         if (size === void 0) { size = exports.IMAGE_SIZE; }
         if (threshold === void 0) { threshold = 0.5; }
         if (symbol === void 0) { symbol = '0'; }
@@ -180,11 +182,11 @@ var DataParser = (function () {
         for (var i = 0; i < imageData.length; i++) {
             output += imageData[i] > threshold ? symbol : ' ';
             if (i % size === 0) {
-                console.log(output);
+                outputFunction(output);
                 output = '';
             }
         }
-        console.log(output);
+        outputFunction(output);
     };
     /**
      * Stores data for each digits that were previously accessed in case a specific data set will be requested again

@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.9
+ * @version 0.1.0
  */
 
 /**
@@ -236,10 +236,12 @@ export class DataParser {
 
     /**
      * Prints out an image from an array of greyscale pixels
+     * @since 0.1.0 `outputFunction` is now an injected dependency
      * @since 0.0.8 Tweak default values for arguments
      * @since 0.0.6
      */
     public static printImage(imageData: number[],
+                             outputFunction: (output: string) => void = console.log,
                              size: number = IMAGE_SIZE,
                              threshold: number = 0.5,
                              symbol: string = '0') {
@@ -247,10 +249,10 @@ export class DataParser {
         for (let i = 0; i < imageData.length; i++) {
             output += imageData[i] > threshold ? symbol : ' ';
             if (i % size === 0) {
-                console.log(output);
+                outputFunction(output);
                 output = '';
             }
         }
-        console.log(output);
+        outputFunction(output);
     }
 }
