@@ -1,6 +1,7 @@
 "use strict";
 var DataParser_1 = require('./DataParser');
 var NeuralNetwork_1 = require('./NeuralNetwork');
+var Util_1 = require('./Util');
 /**
  * A file containing all interfaces and classes related to the classifier matching images of handwritten digits to
  * their integer representation.
@@ -8,7 +9,7 @@ var NeuralNetwork_1 = require('./NeuralNetwork');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.5
+ * @version 0.0.6
  */
 /**
  * Scales the output of the NeuralNetwork, i.e. if your expected output is 8 and `MODIFIER` is 5, neural network
@@ -16,7 +17,7 @@ var NeuralNetwork_1 = require('./NeuralNetwork');
  * the answer.
  * @since 0.0.2
  */
-var MODIFIER = 5.0;
+var MODIFIER = 0.5;
 /**
  * Class responsible for setting up, testing and training a neural network
  * @since 0.0.1
@@ -37,6 +38,7 @@ var DigitClassifier = (function () {
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.
      * Prints each test case if `print` is set to true.
+     * @since 0.0.6 Add support for multiple output neurons
      * @since 0.0.3 Replace all `var` with `let` keywords
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
@@ -47,26 +49,50 @@ var DigitClassifier = (function () {
         if (print === void 0) { print = false; }
         var correctGuesses = 0;
         digitMatrices.forEach(function (matrix) {
-            var output = _this.neuralNetwork.runWith(matrix.matrix)[0] / MODIFIER;
-            var displayOutput = output.toFixed(4);
-            var parsedOutput = outputOperation(output);
-            var correct = parsedOutput === matrix.digit;
+            var outputs = _this.neuralNetwork.runWith(matrix.matrix);
+            var neuronsFired = [];
+            for (var i = 0; i < outputs.length; i++) {
+                if (outputOperation(outputs[i]) > MODIFIER / 2) {
+                    neuronsFired.push(i);
+                }
+            }
+            var singleNeuron = neuronsFired.length === 1;
+            var correct = singleNeuron && neuronsFired[0] === matrix.digit;
             if (correct) {
                 correctGuesses++;
             }
             if (print) {
                 var colors = require('colors/safe');
-                console.log('[TEST]   Expected -> ' + matrix.digit + '   Actual -> ' + displayOutput + ' (' + parsedOutput + ')');
-                var correctString = 'CORRECT GUESS';
+                console.log();
+                var expected = 'Expected ---> ' + colors.green(matrix.digit);
+                var outputString = neuronsFired.toString();
+                var actual = 'Actual ---> ' + (correct ? colors.green(outputString) : colors.red(outputString));
+                Util_1.Util.logTest('Output:    ' + expected + '    ' + actual);
+                Util_1.Util.logTest();
+                var result = 'CORRECT GUESS';
                 if (correct) {
-                    correctString = colors.green(correctString);
+                    result = colors.green(result);
                 }
                 else {
-                    correctString = colors.red('IN' + correctString);
+                    result = colors.red('IN' + result);
                 }
-                console.log(correctString);
-                console.log('Image of the digit:');
-                DataParser_1.DataParser.printImage(matrix.matrix);
+                Util_1.Util.logTest(result);
+                Util_1.Util.logTest();
+                Util_1.Util.logTest('Sigmoid neuron outputs:');
+                Util_1.Util.logTest();
+                for (var i = 0; i < outputs.length; i++) {
+                    var neuronIndex = colors.cyan(i);
+                    var neuronOutput = outputs[i];
+                    var neuronDisplayOutput = colors.cyan(neuronOutput.toFixed(2));
+                    if (neuronsFired.indexOf(i) !== -1) {
+                        neuronDisplayOutput += ' <';
+                    }
+                    Util_1.Util.logTest(neuronIndex + ' ---> ' + neuronDisplayOutput);
+                }
+                Util_1.Util.logTest();
+                Util_1.Util.logTest('Image of the digit:');
+                Util_1.Util.logTest();
+                DataParser_1.DataParser.printImage(matrix.matrix, Util_1.Util.logTest);
                 console.log();
             }
         });
@@ -74,6 +100,7 @@ var DigitClassifier = (function () {
     };
     /**
      * Trains the neural network using provided set of matrices. Repeats the process `iterationCount` times.
+     * @since 0.0.6 Change the way expected output is generated
      * @since 0.0.5 Now works with output layers with neuron count higher than 1
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
@@ -84,7 +111,7 @@ var DigitClassifier = (function () {
             digitMatrices.forEach(function (matrix) {
                 var expectedOutput = [];
                 for (var i_1 = 0; i_1 < _this.outputLayerConfig.neuronCount; i_1++) {
-                    expectedOutput.push(matrix.digit * MODIFIER);
+                    expectedOutput[i_1] = i_1 === matrix.digit ? MODIFIER : 0;
                 }
                 _this.neuralNetwork.trainWith(matrix.matrix, expectedOutput, stepSize);
             });

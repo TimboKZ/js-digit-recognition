@@ -1,6 +1,7 @@
 import {DataParser, IDigitMatrix} from './DataParser';
 import {ILayerConfiguration} from './Layer';
 import {NeuralNetwork} from './NeuralNetwork';
+import {Util} from './Util';
 /**
  * A file containing all interfaces and classes related to the classifier matching images of handwritten digits to
  * their integer representation.
@@ -8,7 +9,7 @@ import {NeuralNetwork} from './NeuralNetwork';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.5
+ * @version 0.0.6
  */
 
 /**
@@ -17,7 +18,7 @@ import {NeuralNetwork} from './NeuralNetwork';
  * the answer.
  * @since 0.0.2
  */
-const MODIFIER = 5.0;
+const MODIFIER = 0.5;
 
 /**
  * Class responsible for setting up, testing and training a neural network
@@ -53,6 +54,7 @@ export class DigitClassifier {
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.
      * Prints each test case if `print` is set to true.
+     * @since 0.0.6 Add support for multiple output neurons
      * @since 0.0.3 Replace all `var` with `let` keywords
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
@@ -62,27 +64,50 @@ export class DigitClassifier {
                 print: boolean = false): number {
         let correctGuesses = 0;
         digitMatrices.forEach((matrix: IDigitMatrix) => {
-            let output = this.neuralNetwork.runWith(matrix.matrix)[0] / MODIFIER;
-            let displayOutput = output.toFixed(4);
-            let parsedOutput = outputOperation(output);
-            let correct: boolean = parsedOutput === matrix.digit;
+            let outputs = this.neuralNetwork.runWith(matrix.matrix);
+            let neuronsFired: number[] = [];
+            for (let i = 0; i < outputs.length; i++) {
+                if (outputOperation(outputs[i]) > MODIFIER / 2) {
+                    neuronsFired.push(i);
+                }
+            }
+            let singleNeuron = neuronsFired.length === 1;
+            let correct: boolean = singleNeuron && neuronsFired[0] === matrix.digit;
             if (correct) {
                 correctGuesses++;
             }
             if (print) {
                 let colors = require('colors/safe');
-                console.log(
-                    '[TEST]   Expected -> ' + matrix.digit + '   Actual -> ' + displayOutput + ' (' + parsedOutput + ')'
-                );
-                let correctString = 'CORRECT GUESS';
+
+                console.log();
+                let expected = 'Expected ---> ' + colors.green(matrix.digit);
+                let outputString = neuronsFired.toString();
+                let actual = 'Actual ---> ' + (correct ? colors.green(outputString) : colors.red(outputString));
+                Util.logTest('Output:    ' + expected + '    ' + actual);
+                Util.logTest();
+                let result = 'CORRECT GUESS';
                 if (correct) {
-                    correctString = colors.green(correctString);
+                    result = colors.green(result);
                 } else {
-                    correctString = colors.red('IN' + correctString);
+                    result = colors.red('IN' + result);
                 }
-                console.log(correctString);
-                console.log('Image of the digit:');
-                DataParser.printImage(matrix.matrix);
+                Util.logTest(result);
+                Util.logTest();
+                Util.logTest('Sigmoid neuron outputs:');
+                Util.logTest();
+                for (let i = 0; i < outputs.length; i++) {
+                    let neuronIndex = colors.cyan(i);
+                    let neuronOutput = outputs[i];
+                    let neuronDisplayOutput = colors.cyan(neuronOutput.toFixed(2));
+                    if (neuronsFired.indexOf(i) !== -1) {
+                        neuronDisplayOutput += ' <';
+                    }
+                    Util.logTest(neuronIndex + ' ---> ' + neuronDisplayOutput);
+                }
+                Util.logTest();
+                Util.logTest('Image of the digit:');
+                Util.logTest();
+                DataParser.printImage(matrix.matrix, Util.logTest);
                 console.log();
             }
         });
@@ -91,6 +116,7 @@ export class DigitClassifier {
 
     /**
      * Trains the neural network using provided set of matrices. Repeats the process `iterationCount` times.
+     * @since 0.0.6 Change the way expected output is generated
      * @since 0.0.5 Now works with output layers with neuron count higher than 1
      * @since 0.0.2 Now uses `MODIFIER` constant
      * @since 0.0.1
@@ -100,7 +126,7 @@ export class DigitClassifier {
             digitMatrices.forEach((matrix: IDigitMatrix) => {
                 let expectedOutput: number[] = [];
                 for (let i = 0; i < this.outputLayerConfig.neuronCount; i++) {
-                    expectedOutput.push(matrix.digit * MODIFIER);
+                    expectedOutput[i] = i === matrix.digit ? MODIFIER : 0;
                 }
                 this.neuralNetwork.trainWith(matrix.matrix, expectedOutput, stepSize);
             });
