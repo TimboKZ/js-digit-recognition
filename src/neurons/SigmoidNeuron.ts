@@ -7,7 +7,7 @@ import {Neuron} from './Neuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 /**
@@ -36,16 +36,15 @@ export class SigmoidNeuron extends Neuron {
     /**
      * Backdrops the gradient of the output unit to the input unit by multiplying it with the derivative of the
      * sigmoid function. Then adjusts the value of the stored variable unit.
+     * @since 0.0.3 Remove leftover debug code
      * @since 0.0.2 Fixed incorrect variable being used
      * @since 0.0.1
      */
     public backward(stepSize?: number) {
-        console.log(stepSize);
         let sigmaValue = this.sigmaWrapper();
         let gradient = this.variableUnits[0].value * sigmaValue * (1 - sigmaValue);
         this.inputUnits[0].gradient = gradient * this.outputUnit.gradient;
         if (stepSize) {
-            console.log('ADJ');
             this.variableUnits[0].value += stepSize * this.variableUnits[0].gradient;
         }
     }
