@@ -1,9 +1,8 @@
-import {DataParser, IDigitDataSet, IDigitMatrix, IMAGE_SIZE} from './DataParser';
-import {DigitClassifier} from './DigitClassifier';
-import {ILayerConfiguration} from './Layer';
-import {Neuron} from './neurons/Neuron';
-import {ReLUNeuron} from './neurons/ReLUNeuron';
-import {SigmoidNeuron} from './neurons/SigmoidNeuron';
+import {DataParser, IDigitDataSet, IDigitMatrix, IMAGE_SIZE} from '../../src/DataParser';
+import {DigitClassifier} from '../../src/DigitClassifier';
+import {ILayerConfiguration} from '../../src/Layer';
+import {LinearNeuron} from '../../src/neurons/LinearNeuron';
+import {ReLUNeuron} from '../../src/neurons/ReLUNeuron';
 /**
  * The core of the neural network
  *
@@ -35,7 +34,7 @@ let hiddenLayers = [
     {
         coefficientGenerator: coefficientGenerator,
         neuronCount: 10,
-        neuronType: Neuron,
+        neuronType: LinearNeuron,
     },
 ];
 let digitClassifier = new DigitClassifier(inputUnitsCount, outputLayer, hiddenLayers);

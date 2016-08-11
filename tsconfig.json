@@ -9,6 +9,6 @@
   },
   "files": [
     "./typings/index.d.ts",
-    "./src/core.ts"
+    "./test/neural-network-test"
   ]
 }

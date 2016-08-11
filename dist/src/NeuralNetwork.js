@@ -8,7 +8,7 @@ var Util_1 = require('./Util');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.8
+ * @version 0.0.9
  */
 /**
  * The neural network class that manages Layers of Neurons
@@ -17,6 +17,7 @@ var Util_1 = require('./Util');
 var NeuralNetwork = (function () {
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.9 Fixed bug where `outputLayer` would be pushed into `allLayers` even if it is undefined
      * @since 0.0.8 Now uses LinearNeuron since Neuron is now abstract, all layers but input are now optional
      * @since 0.0.7 Added `inputLayerConfig`
      * @since 0.0.6 Changed `number` to `ILayerConfiguration` in types of `outputLayer` and `hiddenLayers`
@@ -32,8 +33,11 @@ var NeuralNetwork = (function () {
         }
         this.inputLayer = Layer_1.Layer.fromInput(inputUnits);
         var lastLayer = this.inputLayer;
-        var allLayers = hiddenLayers.slice(0);
-        allLayers.push(outputLayer);
+        var allLayers = [];
+        allLayers.concat(hiddenLayers);
+        if (outputLayer) {
+            allLayers.push(outputLayer);
+        }
         for (var i = 0; i < allLayers.length; i++) {
             var memoryLayer = lastLayer;
             lastLayer = Layer_1.Layer.fromLayer(allLayers[i], lastLayer);
@@ -100,4 +104,3 @@ var NeuralNetwork = (function () {
     return NeuralNetwork;
 }());
 exports.NeuralNetwork = NeuralNetwork;
-//# sourceMappingURL=NeuralNetwork.js.map

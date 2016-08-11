@@ -1,14 +1,13 @@
 import {ILayerConfiguration, Layer} from './Layer';
 import {Unit} from './Unit';
 import {Util} from './Util';
-import {LinearNeuron} from './neurons/LinearNeuron';
 /**
  * File containing all classes and interfaces related to the NeuralNetwork object
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.8
+ * @version 0.0.9
  */
 
 /**
@@ -41,6 +40,7 @@ export class NeuralNetwork {
 
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.9 Fixed bug where `outputLayer` would be pushed into `allLayers` even if it is undefined
      * @since 0.0.8 Now uses LinearNeuron since Neuron is now abstract, all layers but input are now optional
      * @since 0.0.7 Added `inputLayerConfig`
      * @since 0.0.6 Changed `number` to `ILayerConfiguration` in types of `outputLayer` and `hiddenLayers`
@@ -57,8 +57,11 @@ export class NeuralNetwork {
         }
         this.inputLayer = Layer.fromInput(inputUnits);
         let lastLayer = this.inputLayer;
-        let allLayers: ILayerConfiguration[] = hiddenLayers.slice(0);
-        allLayers.push(outputLayer);
+        let allLayers: ILayerConfiguration[] = [];
+        allLayers.concat(hiddenLayers);
+        if (outputLayer) {
+            allLayers.push(outputLayer);
+        }
         for (let i = 0; i < allLayers.length; i++) {
             let memoryLayer = lastLayer;
             lastLayer = Layer.fromLayer(allLayers[i], lastLayer);
