@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 "use strict";
 /**
@@ -37,6 +37,17 @@ var Util = (function () {
                 console.log(prefix + outputString);
             });
         }
+    };
+    /**
+     * Generate a random number in specified range.
+     * @since 0.0.3
+     */
+    Util.randomInRage = function (min, max, integersOnly) {
+        if (integersOnly === void 0) { integersOnly = false; }
+        if (integersOnly) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+        return Math.random() * (max - min) + min;
     };
     return Util;
 }());
