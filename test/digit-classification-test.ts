@@ -1,8 +1,8 @@
-import {DataParser, IDigitDataSet, IDigitMatrix, IMAGE_SIZE} from '../../src/DataParser';
-import {DigitClassifier} from '../../src/DigitClassifier';
-import {ILayerConfiguration} from '../../src/Layer';
-import {LinearNeuron} from '../../src/neurons/LinearNeuron';
-import {ReLUNeuron} from '../../src/neurons/ReLUNeuron';
+import {DataParser, IDigitDataSet, IDigitMatrix, IMAGE_SIZE} from '../src/DataParser';
+import {DigitClassifier} from '../src/DigitClassifier';
+import {ILayerConfiguration} from '../src/Layer';
+import {LinearNeuron} from '../src/neurons/LinearNeuron';
+import {ReLUNeuron} from '../src/neurons/ReLUNeuron';
 /**
  * The core of the neural network
  *
@@ -20,11 +20,6 @@ let dataSet = DataParser.combineDataSets(dataSets, true);
 // INITIALISE A DIGIT CLASSIFIER
 let coefficientGenerator = () => (Math.random() - 0.5);
 let inputUnitsCount = IMAGE_SIZE * IMAGE_SIZE;
-let outputLayer: ILayerConfiguration = {
-    coefficientGenerator: coefficientGenerator,
-    neuronCount: 10,
-    neuronType: ReLUNeuron,
-};
 let hiddenLayers = [
     {
         coefficientGenerator: coefficientGenerator,
