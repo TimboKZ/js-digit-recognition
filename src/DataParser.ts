@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.1.1
  */
 
 /**
@@ -27,6 +27,12 @@ export const IMAGE_SIZE = 16;
  * @since 0.0.8
  */
 const RGB_THRESHOLD = 40;
+
+/**
+ * DataParser will strip all images that have less white pixels than specified in the threshold
+ * @since 0.1.1
+ */
+const PIXEL_THRESHOLD = 30;
 
 /**
  * Default data set size, JPEG images in `raw_data` directory all have 1100 16x16 pixel images
@@ -138,6 +144,7 @@ export class DataParser {
      * - Images are to be read from top to bottom, starting at the leftmost column
      * - The size of the training subset is TRAINING_SET_SIZE
      * - The size of the testing subset is DATA_SET_SIZE - TRAINING_SET_SIZE
+     * @since 0.1.1 Now considers the case when subImage() returns `undefined`
      * @since 0.0.1
      */
     public static buildDataSet(digit: number, imageData: IImageData): IDigitDataSet {
@@ -154,15 +161,19 @@ export class DataParser {
         for (let columnsIterator = 0; columnsIterator < columns; columnsIterator++) {
             for (let rowsIterator = 0; rowsIterator < rows; rowsIterator++) {
                 matrixCounter++;
+                let image = DataParser.subImage(
+                    rowsIterator * IMAGE_SIZE,
+                    columnsIterator * IMAGE_SIZE,
+                    IMAGE_SIZE,
+                    columns,
+                    imageData.data
+                );
+                if (!image) {
+                    continue;
+                }
                 let digitMatrix = {
                     digit: digit,
-                    matrix: DataParser.subImage(
-                        rowsIterator * IMAGE_SIZE,
-                        columnsIterator * IMAGE_SIZE,
-                        IMAGE_SIZE,
-                        columns,
-                        imageData.data
-                    ),
+                    matrix: image,
                 };
                 if (matrixCounter < TRAINING_SET_SIZE) {
                     trainingMatrices.push(digitMatrix);
@@ -179,6 +190,7 @@ export class DataParser {
 
     /**
      * Extract a sub-image from the supplied imageData
+     * @since 0.1.1 Now returns `undefined` is image has less white pixels than desired
      * @since 0.0.8 Now converts RGB representation of pixels into binary, where 1 is white and 0 is black
      * @since 0.0.7 Add numerical tweaks to improve the output
      * @since 0.0.1
@@ -190,12 +202,20 @@ export class DataParser {
                             imageData: Uint8Array): number[] {
         let subImage: number[] = [];
         let index = 0;
+        let whitePixelCount = 0;
         for (let row = 0; row < size; row++) {
             for (let column = 0; column < size; column++) {
                 let imageDataIndex = DataParser.coordinatesToIndex(row + startX, column + startY, columns - 1);
-                subImage[index] = imageData[imageDataIndex * 4] > RGB_THRESHOLD ? 1 : 0;
+                subImage[index] = 0;
+                if (imageData[imageDataIndex * 4] > RGB_THRESHOLD) {
+                    subImage[index] = 1;
+                    whitePixelCount++;
+                }
                 index++;
             }
+        }
+        if (whitePixelCount < PIXEL_THRESHOLD) {
+            return undefined;
         }
         return subImage;
     }
@@ -236,6 +256,7 @@ export class DataParser {
 
     /**
      * Prints out an image from an array of greyscale pixels
+     * @since 0.1.1 Changed symbol from `0` to `█`
      * @since 0.1.0 `outputFunction` is now an injected dependency
      * @since 0.0.8 Tweak default values for arguments
      * @since 0.0.6
@@ -244,7 +265,7 @@ export class DataParser {
                              outputFunction: (output: string) => void = console.log,
                              size: number = IMAGE_SIZE,
                              threshold: number = 0.5,
-                             symbol: string = '0') {
+                             symbol: string = '█') {
         let output = '';
         for (let i = 0; i < imageData.length; i++) {
             output += imageData[i] > threshold ? symbol : ' ';
