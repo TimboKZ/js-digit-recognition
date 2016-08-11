@@ -2,14 +2,13 @@
 var Layer_1 = require('./Layer');
 var Unit_1 = require('./Unit');
 var Util_1 = require('./Util');
-var Neuron_1 = require('./neurons/Neuron');
 /**
  * File containing all classes and interfaces related to the NeuralNetwork object
  *
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.7
+ * @version 0.0.8
  */
 /**
  * The neural network class that manages Layers of Neurons
@@ -18,6 +17,7 @@ var Neuron_1 = require('./neurons/Neuron');
 var NeuralNetwork = (function () {
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.0.8 Now uses LinearNeuron since Neuron is now abstract, all layers but input are now optional
      * @since 0.0.7 Added `inputLayerConfig`
      * @since 0.0.6 Changed `number` to `ILayerConfiguration` in types of `outputLayer` and `hiddenLayers`
      * @since 0.0.4 Fixed a bug where the output layer would not get linked correctly
@@ -30,21 +30,17 @@ var NeuralNetwork = (function () {
         for (var i = 0; i < inputCount; i++) {
             inputUnits[i] = new Unit_1.Unit();
         }
-        var inputLayerConfig = {
-            coefficientGenerator: function () { return 1.0; },
-            neuronType: Neuron_1.Neuron,
-        };
-        this.inputLayer = Layer_1.Layer.fromUnits(inputUnits, inputLayerConfig);
+        this.inputLayer = Layer_1.Layer.fromInput(inputUnits);
         var lastLayer = this.inputLayer;
-        for (var i = 0; i < hiddenLayers.length; i++) {
+        var allLayers = hiddenLayers.slice(0);
+        allLayers.push(outputLayer);
+        for (var i = 0; i < allLayers.length; i++) {
             var memoryLayer = lastLayer;
-            lastLayer = Layer_1.Layer.fromLayer(hiddenLayers[i], lastLayer);
+            lastLayer = Layer_1.Layer.fromLayer(allLayers[i], lastLayer);
             memoryLayer.setNextLayer(lastLayer);
         }
-        this.outputLayer = Layer_1.Layer.fromLayer(outputLayer, lastLayer);
-        lastLayer.setNextLayer(this.outputLayer);
         this.inputUnits = inputUnits;
-        this.outputUnits = this.outputLayer.getOutputUnits();
+        this.outputUnits = lastLayer.getOutputUnits();
     }
     /**
      * Trains the network using some input data and the expected output data, adjusting the variable inputs in the
