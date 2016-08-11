@@ -9,7 +9,7 @@ var Util_1 = require('./Util');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.7
+ * @version 0.0.8
  */
 /**
  * Class responsible for setting up, testing and training a neural network
@@ -32,6 +32,7 @@ var DigitClassifier = (function () {
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.
      * Prints each test case if `print` is set to true.
+     * @since 0.0.8 Tweaked the way output is printed
      * @since 0.0.7 Now uses maximum neuron output to classify the image
      * @since 0.0.6 Add support for multiple output neurons
      * @since 0.0.3 Replace all `var` with `let` keywords
@@ -63,9 +64,9 @@ var DigitClassifier = (function () {
             if (print) {
                 var colors = require('colors/safe');
                 console.log();
-                var expected = 'Expected ---> ' + colors.green(matrix.digit);
-                var actual = 'Actual ---> ' + (correct ? colors.green(maximumNeuron) : colors.red(maximumNeuron));
-                Util_1.Util.logTest('Output:    ' + expected + '    ' + actual);
+                var expected = 'Expected > ' + colors.green(matrix.digit);
+                var actual = 'Actual > ' + (correct ? colors.green(maximumNeuron) : colors.red(maximumNeuron));
+                Util_1.Util.logTest('Output:  ' + expected + '  ' + actual);
                 Util_1.Util.logTest();
                 var result = 'CORRECT GUESS';
                 if (correct) {
@@ -92,7 +93,7 @@ var DigitClassifier = (function () {
                     var line = '';
                     for (var k = 0; k < 10; k++) {
                         if (k === normalisedOutput) {
-                            line += colors.bgYellow(colors.black('X'));
+                            line += colors.bgYellow(colors.black('◆'));
                         }
                         else {
                             line += colors.bgYellow(' ');
@@ -103,7 +104,8 @@ var DigitClassifier = (function () {
                 Util_1.Util.logTest();
                 Util_1.Util.logTest('Image of the digit:');
                 Util_1.Util.logTest();
-                DataParser_1.DataParser.printImage(matrix.matrix, Util_1.Util.logTest);
+                var printFunction_1 = correct ? colors.green : colors.red;
+                DataParser_1.DataParser.printImage(matrix.matrix, function (line) { return Util_1.Util.logTest(printFunction_1(line)); });
                 console.log();
             }
         });

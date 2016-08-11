@@ -9,7 +9,7 @@ import {Util} from './Util';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.7
+ * @version 0.0.8
  */
 
 /**
@@ -47,6 +47,7 @@ export class DigitClassifier {
     /**
      * Tests the classifier with the provided set of digit matrices, returns the accuracy of guesses over said set.
      * Prints each test case if `print` is set to true.
+     * @since 0.0.8 Tweaked the way output is printed
      * @since 0.0.7 Now uses maximum neuron output to classify the image
      * @since 0.0.6 Add support for multiple output neurons
      * @since 0.0.3 Replace all `var` with `let` keywords
@@ -78,9 +79,9 @@ export class DigitClassifier {
                 let colors = require('colors/safe');
 
                 console.log();
-                let expected = 'Expected ---> ' + colors.green(matrix.digit);
-                let actual = 'Actual ---> ' + (correct ? colors.green(maximumNeuron) : colors.red(maximumNeuron));
-                Util.logTest('Output:    ' + expected + '    ' + actual);
+                let expected = 'Expected > ' + colors.green(matrix.digit);
+                let actual = 'Actual > ' + (correct ? colors.green(maximumNeuron) : colors.red(maximumNeuron));
+                Util.logTest('Output:  ' + expected + '  ' + actual);
                 Util.logTest();
                 let result = 'CORRECT GUESS';
                 if (correct) {
@@ -106,7 +107,7 @@ export class DigitClassifier {
                     let line = '';
                     for (let k = 0; k < 10; k++) {
                         if (k === normalisedOutput) {
-                            line += colors.bgYellow(colors.black('X'));
+                            line += colors.bgYellow(colors.black('◆'));
                         } else {
                             line += colors.bgYellow(' ');
                         }
@@ -116,7 +117,8 @@ export class DigitClassifier {
                 Util.logTest();
                 Util.logTest('Image of the digit:');
                 Util.logTest();
-                DataParser.printImage(matrix.matrix, Util.logTest);
+                let printFunction = correct ? colors.green : colors.red;
+                DataParser.printImage(matrix.matrix, (line: string) => Util.logTest(printFunction(line)));
                 console.log();
             }
         });
