@@ -3,8 +3,8 @@ import {NeuralNetwork} from '../src/NeuralNetwork';
 import {Util} from '../src/Util';
 import {LinearNeuron} from '../src/neurons/LinearNeuron';
 import {ReLUNeuron} from '../src/neurons/ReLUNeuron';
-import {knuthShuffle} from 'knuth-shuffle';
 import {expect} from 'chai';
+import {knuthShuffle} from 'knuth-shuffle';
 /**
  * Basic smoke tests to check that classification works correctly with 2 classes
  *
