@@ -7,7 +7,7 @@ import {Util} from './Util';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.1.1
  */
 
 /**
@@ -40,6 +40,7 @@ export class NeuralNetwork {
 
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.1.1 Added missing `this.outputLayer` assignment
      * @since 0.1.0 Output layer is now the last layer in the `layers` arrays
      * @since 0.0.9 Fixed bug where `outputLayer` would be pushed into `allLayers` even if it is undefined
      * @since 0.0.8 Now uses LinearNeuron since Neuron is now abstract, all layers but input are now optional
@@ -62,8 +63,9 @@ export class NeuralNetwork {
             lastLayer = Layer.fromLayer(layers[i], lastLayer);
             memoryLayer.setNextLayer(lastLayer);
         }
+        this.outputLayer = lastLayer;
         this.inputUnits = inputUnits;
-        this.outputUnits = lastLayer.getOutputUnits();
+        this.outputUnits = this.outputLayer.getOutputUnits();
     }
 
     /**
