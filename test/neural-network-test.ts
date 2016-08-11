@@ -3,7 +3,6 @@ import {NeuralNetwork} from '../src/NeuralNetwork';
 import {Util} from '../src/Util';
 import {LinearNeuron} from '../src/neurons/LinearNeuron';
 import {ReLUNeuron} from '../src/neurons/ReLUNeuron';
-import {SigmoidNeuron} from '../src/neurons/SigmoidNeuron';
 import {expect} from 'chai';
 /**
  * Some naive
@@ -11,7 +10,7 @@ import {expect} from 'chai';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 /**
@@ -32,6 +31,7 @@ describe('Neural network with single input layer', function () {
 
 /**
  * Testing a neural network with an input layer, an output layer and no hidden layers, using linear neurons
+ * @since 0.0.3 Increased `trainingIterations` to give a more consistent ReLU neuron performance
  * @since 0.0.2
  */
 describe('Neural network with an output layer', function () {
@@ -50,7 +50,7 @@ describe('Neural network with an output layer', function () {
         });
     });
 
-    let trainingIterations = 2000;
+    let trainingIterations = 5000;
     let neuronTypes: {[neuronType: string]: INeuronTypeParameter} = {
         'linear': LinearNeuron,
         'ReLU': ReLUNeuron,

@@ -10,7 +10,7 @@ var chai_1 = require('chai');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 /**
  * Testing a neural network with a single input layer
@@ -29,6 +29,7 @@ describe('Neural network with single input layer', function () {
 });
 /**
  * Testing a neural network with an input layer, an output layer and no hidden layers, using linear neurons
+ * @since 0.0.3 Increased `trainingIterations` to give a more consistent ReLU neuron performance
  * @since 0.0.2
  */
 describe('Neural network with an output layer', function () {
@@ -46,7 +47,7 @@ describe('Neural network with an output layer', function () {
             chai_1.expect(nn.runWith([1]).length).to.equal(outputCount);
         });
     });
-    var trainingIterations = 2000;
+    var trainingIterations = 5000;
     var neuronTypes = {
         'linear': LinearNeuron_1.LinearNeuron,
         'ReLU': ReLUNeuron_1.ReLUNeuron,
