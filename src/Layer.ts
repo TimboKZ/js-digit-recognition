@@ -1,4 +1,5 @@
 import {Unit} from './Unit';
+import {InputNeuron} from './neurons/InputNeuron';
 import {LinearNeuron} from './neurons/LinearNeuron';
 import {Neuron} from './neurons/Neuron';
 import {ReLUNeuron} from './neurons/ReLUNeuron';
@@ -9,7 +10,7 @@ import {SigmoidNeuron} from './neurons/SigmoidNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.9
+ * @version 0.1.0
  */
 
 /**
@@ -78,11 +79,29 @@ export class Layer {
     }
 
     /**
+     * Generates an input layer using passive input neurons that simply relay the value of the input unit to the
+     * output unit.
+     * @since 0.1.0
+     */
+    public static fromInput(inputUnits: Unit[]): Layer {
+        let inputNeurons: InputNeuron[] = [];
+        let outputUnits: Unit[] = [];
+        for (let i = 0; i < inputUnits.length; i++) {
+            let outputUnit = new Unit();
+            let inputNeuron = new InputNeuron(inputUnits[i], outputUnit);
+            inputNeurons.push(inputNeuron);
+            outputUnits.push(outputUnit);
+        }
+        return new Layer(inputNeurons, outputUnits);
+    }
+
+    /**
      * Generates a layer of neurons using an array of Units. Each unit is mapped 1-to-1 with a single Neuron.
      * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidNeuron (log-sigmoidal neuron)
+     * TODO: Consider deprecating this method now that Layer.fromInput() exists
      * @since 0.0.9 Now uses LinearNeuron since Neruon is now abstract
      * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement

@@ -1,5 +1,6 @@
 "use strict";
 var Unit_1 = require('./Unit');
+var InputNeuron_1 = require('./neurons/InputNeuron');
 var LinearNeuron_1 = require('./neurons/LinearNeuron');
 var ReLUNeuron_1 = require('./neurons/ReLUNeuron');
 var SigmoidNeuron_1 = require('./neurons/SigmoidNeuron');
@@ -21,11 +22,28 @@ var Layer = (function () {
         }
     }
     /**
+     * Generates an input layer using passive input neurons that simply relay the value of the input unit to the
+     * output unit.
+     * @since 0.1.0
+     */
+    Layer.fromInput = function (inputUnits) {
+        var inputNeurons = [];
+        var outputUnits = [];
+        for (var i = 0; i < inputUnits.length; i++) {
+            var outputUnit = new Unit_1.Unit();
+            var inputNeuron = new InputNeuron_1.InputNeuron(inputUnits[i], outputUnit);
+            inputNeurons.push(inputNeuron);
+            outputUnits.push(outputUnit);
+        }
+        return new Layer(inputNeurons, outputUnits);
+    };
+    /**
      * Generates a layer of neurons using an array of Units. Each unit is mapped 1-to-1 with a single Neuron.
      * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
      * types of neurons are:
      * - Neuron (linear neuron)
      * - SigmoidNeuron (log-sigmoidal neuron)
+     * TODO: Consider deprecating this method now that Layer.fromInput() exists
      * @since 0.0.9 Now uses LinearNeuron since Neruon is now abstract
      * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
