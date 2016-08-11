@@ -46,7 +46,7 @@ var DigitClassifier = (function () {
             var outputs = _this.neuralNetwork.runWith(matrix.matrix);
             var maximumValue = -Infinity;
             var minimumValue = +Infinity;
-            var maximumNeuron = -1;
+            var maximumNeuron = NaN;
             for (var i = 0; i < outputs.length; i++) {
                 if (outputs[i] > maximumValue) {
                     maximumValue = outputs[i];

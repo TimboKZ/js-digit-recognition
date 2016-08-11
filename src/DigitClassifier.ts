@@ -60,7 +60,7 @@ export class DigitClassifier {
             let outputs = this.neuralNetwork.runWith(matrix.matrix);
             let maximumValue = -Infinity;
             let minimumValue = +Infinity;
-            let maximumNeuron = -1;
+            let maximumNeuron = NaN;
             for (let i = 0; i < outputs.length; i++) {
                 if (outputs[i] > maximumValue) {
                     maximumValue = outputs[i];
