@@ -1,5 +1,5 @@
 {
-  "name": "imdb-neural-network",
+  "name": "js-digit-recognition",
   "private": true,
   "scripts": {
     "start": "node dist/core.js"
@@ -12,6 +12,7 @@
     "knuth-shuffle": "^1.0.1"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "mocha": "^3.0.2",
     "source-map-loader": "^0.1.5",
     "ts-loader": "^0.8.2",
