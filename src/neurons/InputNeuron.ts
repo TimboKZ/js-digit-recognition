@@ -6,7 +6,7 @@ import {Neuron} from './Neuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 /**
@@ -33,7 +33,8 @@ export class InputNeuron extends Neuron {
 
     /**
      * Do nothing.
+     * @since 0.0.2 Add curly brackets to emphasise the empty method body
      * @since 0.0.1
      */
-    public backwardLogic();
+    public backwardLogic() {}
 }

@@ -11,7 +11,7 @@ var Neuron_1 = require('./Neuron');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.1
+ * @version 0.0.2
  */
 /**
  * A very simple passive neuron that simple relays the input value to the output value.
@@ -34,7 +34,12 @@ var InputNeuron = (function (_super) {
     InputNeuron.prototype.forwardLogic = function () {
         this.outputUnit.value = this.inputUnits[0].value;
     };
+    /**
+     * Do nothing.
+     * @since 0.0.2 Add curly brackets to emphasise the empty method body
+     * @since 0.0.1
+     */
+    InputNeuron.prototype.backwardLogic = function () { };
     return InputNeuron;
 }(Neuron_1.Neuron));
 exports.InputNeuron = InputNeuron;
-//# sourceMappingURL=InputNeuron.js.map
