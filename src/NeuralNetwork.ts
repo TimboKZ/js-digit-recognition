@@ -7,7 +7,7 @@ import {Util} from './Util';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.9
+ * @version 0.1.0
  */
 
 /**
@@ -40,6 +40,7 @@ export class NeuralNetwork {
 
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.1.0 Output layer is now the last layer in the `layers` arrays
      * @since 0.0.9 Fixed bug where `outputLayer` would be pushed into `allLayers` even if it is undefined
      * @since 0.0.8 Now uses LinearNeuron since Neuron is now abstract, all layers but input are now optional
      * @since 0.0.7 Added `inputLayerConfig`
@@ -49,22 +50,16 @@ export class NeuralNetwork {
      * @since 0.0.1
      */
     public constructor(inputCount: number,
-                       outputLayer?: ILayerConfiguration,
-                       hiddenLayers: ILayerConfiguration[] = []) {
+                       layers: ILayerConfiguration[] = []) {
         let inputUnits: Unit[] = [];
         for (let i = 0; i < inputCount; i++) {
             inputUnits[i] = new Unit();
         }
         this.inputLayer = Layer.fromInput(inputUnits);
         let lastLayer = this.inputLayer;
-        let allLayers: ILayerConfiguration[] = [];
-        allLayers.concat(hiddenLayers);
-        if (outputLayer) {
-            allLayers.push(outputLayer);
-        }
-        for (let i = 0; i < allLayers.length; i++) {
+        for (let i = 0; i < layers.length; i++) {
             let memoryLayer = lastLayer;
-            lastLayer = Layer.fromLayer(allLayers[i], lastLayer);
+            lastLayer = Layer.fromLayer(layers[i], lastLayer);
             memoryLayer.setNextLayer(lastLayer);
         }
         this.inputUnits = inputUnits;

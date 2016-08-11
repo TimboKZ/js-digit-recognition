@@ -8,7 +8,7 @@ var Util_1 = require('./Util');
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.9
+ * @version 0.1.0
  */
 /**
  * The neural network class that manages Layers of Neurons
@@ -17,6 +17,7 @@ var Util_1 = require('./Util');
 var NeuralNetwork = (function () {
     /**
      * NeuralNetwork constructor. Takes the amount of expected input and output values as arguments.
+     * @since 0.1.0 Output layer is now the last layer in the `layers` arrays
      * @since 0.0.9 Fixed bug where `outputLayer` would be pushed into `allLayers` even if it is undefined
      * @since 0.0.8 Now uses LinearNeuron since Neuron is now abstract, all layers but input are now optional
      * @since 0.0.7 Added `inputLayerConfig`
@@ -25,22 +26,17 @@ var NeuralNetwork = (function () {
      * @since 0.0.3 Fixed a bug where layers were not interconnected
      * @since 0.0.1
      */
-    function NeuralNetwork(inputCount, outputLayer, hiddenLayers) {
-        if (hiddenLayers === void 0) { hiddenLayers = []; }
+    function NeuralNetwork(inputCount, layers) {
+        if (layers === void 0) { layers = []; }
         var inputUnits = [];
         for (var i = 0; i < inputCount; i++) {
             inputUnits[i] = new Unit_1.Unit();
         }
         this.inputLayer = Layer_1.Layer.fromInput(inputUnits);
         var lastLayer = this.inputLayer;
-        var allLayers = [];
-        allLayers.concat(hiddenLayers);
-        if (outputLayer) {
-            allLayers.push(outputLayer);
-        }
-        for (var i = 0; i < allLayers.length; i++) {
+        for (var i = 0; i < layers.length; i++) {
             var memoryLayer = lastLayer;
-            lastLayer = Layer_1.Layer.fromLayer(allLayers[i], lastLayer);
+            lastLayer = Layer_1.Layer.fromLayer(layers[i], lastLayer);
             memoryLayer.setNextLayer(lastLayer);
         }
         this.inputUnits = inputUnits;
