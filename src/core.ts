@@ -10,12 +10,11 @@ import {SigmoidNeuron} from './neurons/SigmoidNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 // PREPARE THE DATA SETS
 let dataSets: IDigitDataSet[] = [];
-dataSets.push(DataParser.getDataSet(1));
 dataSets.push(DataParser.getDataSet(4));
 let dataSet = DataParser.combineDataSets(dataSets, true);
 
@@ -24,22 +23,14 @@ let coefficientGenerator = () => (Math.random() - 0.5);
 let inputUnitsCount = IMAGE_SIZE * IMAGE_SIZE;
 let outputLayer: ILayerConfiguration = {
     coefficientGenerator: coefficientGenerator,
-    neuronType: SigmoidNeuron,
+    neuronCount: 10,
+    neuronType: ReLUNeuron,
 };
 let hiddenLayers = [
     {
         coefficientGenerator: coefficientGenerator,
-        neuronCount: 32,
-        neuronType: Neuron,
-    },
-    {
-        coefficientGenerator: coefficientGenerator,
         neuronCount: 16,
         neuronType: ReLUNeuron,
-    },
-    {
-        coefficientGenerator: coefficientGenerator,
-        neuronType: SigmoidNeuron,
     },
     {
         coefficientGenerator: coefficientGenerator,
@@ -55,7 +46,7 @@ let roundOutput = function (output: number): number {
 };
 let testingMatrices: IDigitMatrix[] = dataSet.testingSet.slice(0, 100);
 let trainingMatrices: IDigitMatrix[] = dataSet.trainingSet.slice(0, 10000);
-let trainIterations = 150;
+let trainIterations = 50;
 let trainRounds = 50;
 let colors = require('colors/safe');
 console.time(colors.green('Time elapsed'));
@@ -64,6 +55,6 @@ for (let i = 0; i < trainRounds; i++) {
     digitClassifier.test([testingMatrices[Math.floor(Math.random() * testingMatrices.length)]], roundOutput, true);
     let accuracy = digitClassifier.test(testingMatrices, roundOutput);
     console.log('Accuracy after ' + i * trainIterations + ' iterations: ' + accuracy.toFixed(3));
-    digitClassifier.train(trainingMatrices, 0.01, trainIterations);
+    digitClassifier.train(trainingMatrices, 0.0001, trainIterations);
 }
 console.timeEnd(colors.green('Time elapsed'));
