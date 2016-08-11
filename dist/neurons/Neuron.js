@@ -5,27 +5,30 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.1.1
  */
 /**
  * Class representing the base neuron, used in hidden layers
+ * @since 0.1.1 Class is now abstract and represent a generic neuron implementation
  * @since 0.0.1
  */
 var Neuron = (function () {
     /**
      * Neuron constructor
+     * @since 0.1.1 Rename `variables` to `variableUnits`, set its default value to empty array
      * @since 0.0.2 outputUnit is now an injected dependency
      * @since 0.0.1
      */
-    function Neuron(inputUnits, outputUnit, variables) {
+    function Neuron(inputUnits, outputUnit, variableUnits) {
+        if (variableUnits === void 0) { variableUnits = []; }
         this.inputUnits = inputUnits;
         this.outputUnit = outputUnit;
-        this.variableUnits = variables;
+        this.variableUnits = variableUnits;
     }
     /**
-     * Logic for the forward pass, similar to:
-     * output = ax + by + ... + cz + d
-     * Where a,b,...c,d are variable units stored in the neuron and x,y,...z are values of input units
+     * Method that can be called externally to trigger the forward pass logic, clearing the output unit gradient
+     * before hand.
+     * @since 0.1.1 No longer contains logic apart from clearing the output unit gradient and calling forwardLogic()
      * @since 0.0.9 Forward pass now resets gradients
      * @since 0.0.8 Removed ReLU
      * @since 0.0.6 Added ReLU
@@ -33,22 +36,14 @@ var Neuron = (function () {
      * @since 0.0.1
      */
     Neuron.prototype.forward = function () {
-        var output = 0;
-        for (var i = 0; i < this.variableUnits.length; i++) {
-            var variableUnit = this.variableUnits[i];
-            variableUnit.gradient = 0.0;
-            var coefficient = 1.0;
-            if (this.inputUnits[i]) {
-                coefficient = this.inputUnits[i].value;
-            }
-            output += coefficient * variableUnit.value;
-        }
-        this.outputUnit.value = output;
-        this.outputUnit.gradient = 0.0;
+        this.outputUnit.gradient = 0;
+        this.forwardLogic();
     };
+    ;
     /**
-     * Logic for the backward pass, first backdrops the gradients to the input units and then adjusts the stored
-     * variable units using the step size
+     * Method that can be called externally to trigger the backward pass logic of the child class neuron. Does not
+     * do anything else as of v0.1.1 but is left here for future use.
+     * @since 0.1.1 No longer contains logic apart from calling backwardLogic()
      * @since 0.1.0 Setup proper back-propagation to the input units
      * @since 0.0.9 Added `adjustment`
      * @since 0.0.8 Removed ReLU
@@ -59,22 +54,7 @@ var Neuron = (function () {
      * @since 0.0.1
      */
     Neuron.prototype.backward = function (stepSize) {
-        for (var i = 0; i < this.variableUnits.length; i++) {
-            var variableUnit = this.variableUnits[i];
-            var coefficient = 1.0;
-            var adjustment = 0.0;
-            if (this.inputUnits[i]) {
-                coefficient = this.inputUnits[i].value;
-                adjustment = variableUnit.value;
-            }
-            variableUnit.gradient += coefficient * this.outputUnit.gradient - adjustment;
-            if (this.inputUnits[i]) {
-                this.inputUnits[i].gradient = variableUnit.value * this.outputUnit.gradient;
-            }
-            if (stepSize) {
-                variableUnit.value += stepSize * variableUnit.gradient;
-            }
-        }
+        this.backwardLogic(stepSize);
     };
     return Neuron;
 }());
