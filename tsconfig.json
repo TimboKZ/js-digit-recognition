@@ -10,6 +10,7 @@
   "files": [
     "./test/basic-classification-test",
     "./test/basic-regression-test",
+    "./test/digit-classification-test",
     "./test/neural-network-test",
     "./typings/index.d.ts"
   ]
