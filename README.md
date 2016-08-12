@@ -6,6 +6,54 @@ My attempt to write a digit recognition engine in JavaScript (TypeScript to be p
 
 As my data set I'm using [USPS Handwritten Digits](http://www.cs.nyu.edu/~roweis/data/usps_all.mat) (also found as jpeg in the `raw_data` folder). I do appreciate the fact that it is a **very** small data set but in my opinion it will suffice for this simple exercise.
 
+# Demo output
+
+[Click here](https://www.youtube.com/watch?v=8lpwIMJbLHU) for a short video of the classifier in action. 
+
+Here's an excerpt of the console output after running `dist/test/digit-classification-test.js`:
+
+```bash
+[TEST] Output:  Expected > 7  Actual > 7
+[TEST]
+[TEST] CORRECT GUESS
+[TEST]
+[TEST] Neuron outputs:
+[TEST]
+[TEST]    0  ◆         0
+[TEST]    1  ◆         1
+[TEST]    2  ◆         2
+[TEST]    3 ◆          3
+[TEST]    4 ◆          4
+[TEST]    5  ◆         5
+[TEST]    6 ◆          6
+[TEST]  > 7          ◆ 7 <
+[TEST]    8 ◆          8
+[TEST]    9  ◆         9
+[TEST]
+[TEST] Image of the digit:
+[TEST]
+[TEST] █
+[TEST]       ██  █ ████
+[TEST]   ██████████████
+[TEST]  ███████ █ █████
+[TEST] █████      ███
+[TEST] ███        ███
+[TEST]           ███
+[TEST]          ████
+[TEST]          ███
+[TEST]         ███
+[TEST]        ████
+[TEST]        ███
+[TEST]       ███
+[TEST]      ███
+[TEST]     ███
+[TEST]     ██
+[TEST]    ██
+
+Accuracy after 243 iterations: 0.789 [---------------->
+
+```
+
 # Running the classifier
 
 The TypeScript source code for the neural network abstraction itself can be found in the `src` folder. Technically, it can be used as a standalone solution so feel free to reuse any of the code found there.
