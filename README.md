@@ -63,3 +63,11 @@ The TypeScript source code for the tests can be found in the `test` folder. All 
 The easiest way to run the tests is to [compile all of the TypeScript into JavaScript](https://www.typescriptlang.org/docs/tutorial.html), I have provided the `tsconfig.json` I used during the development. You can find the precompiled JavaScript source code for the neural network in the `dist/src` folder and the source code for tests in `dist/test` folder.
 
 One can run the classifier by executing `node dist/test/digit-classification-test.js` in the terminal after having installed all of the dependencies (run `npm install` and `typings install` for that).  
+
+# Using the source code
+
+I tried to document all of the TypeScript source code for the neural network implementation itself, although the tests are quite poorly documented. I suggest you use the TypeScript tests to understand how a neural network is initialised and then consult the code in the `src` folder to understand how the actual implementation works.
+
+# Suggestions and feedback
+
+If you feel like something has to be changed or find an error, feel free to create [a new issue thread](https://github.com/TimboKZ/js-digit-recognition/issues).
