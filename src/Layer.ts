@@ -2,6 +2,7 @@ import {Unit} from './Unit';
 import {InputNeuron} from './neurons/InputNeuron';
 import {LinearNeuron} from './neurons/LinearNeuron';
 import {Neuron} from './neurons/Neuron';
+import {PolynomialNeuron} from './neurons/PolynomialNeuron';
 import {ReLUNeuron} from './neurons/ReLUNeuron';
 import {SigmoidNeuron} from './neurons/SigmoidNeuron';
 /**
@@ -10,7 +11,7 @@ import {SigmoidNeuron} from './neurons/SigmoidNeuron';
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.0
+ * @version 0.1.1
  */
 
 /**
@@ -20,18 +21,20 @@ import {SigmoidNeuron} from './neurons/SigmoidNeuron';
  * @since 0.0.4
  */
 export interface INeuronTypeParameter {
-    new (...args: any[]): Neuron;
+    new (...args:any[]):Neuron;
 }
 
 /**
  * An interface used for configuration of the layer
+ * @since 0.1.1 Added `degree` parameter
  * @since 0.0.6 Renamed `generateCoefficient` to `coefficientGenerator`
  * @since 0.0.5
  */
 export interface ILayerConfiguration {
-    neuronType: INeuronTypeParameter;
-    coefficientGenerator: () => number;
-    neuronCount?: number;
+    neuronType:INeuronTypeParameter;
+    coefficientGenerator:() => number;
+    neuronCount?:number;
+    degree?:number;
 }
 
 /**
@@ -45,32 +48,32 @@ export class Layer {
      * is considered to be the input layer.
      * @since 0.0.1
      */
-    private previousLayer: Layer;
+    private previousLayer:Layer;
 
     /**
      * Reference to the next layer, null if there is no next layer
      * @since 0.0.1
      */
-    private nextLayer: Layer;
+    private nextLayer:Layer;
 
     /**
      * Neurons that make up the layer
      * @since 0.0.1
      */
-    private neurons: Neuron[];
+    private neurons:Neuron[];
 
     /**
      * Output units from all of the neurons in the layer, can be requested by the next layer
      * @since 0.0.1
      */
-    private outputUnits: Unit[];
+    private outputUnits:Unit[];
 
     /**
      * Layer constructor.
      * @since 0.0.2 Removed `private` access modifier
      * @since 0.0.1
      */
-    constructor(neurons: Neuron[], outputUnits: Unit[], previousLayer?: Layer) {
+    constructor(neurons:Neuron[], outputUnits:Unit[], previousLayer?:Layer) {
         this.neurons = neurons;
         this.outputUnits = outputUnits;
         if (previousLayer) {
@@ -83,9 +86,9 @@ export class Layer {
      * output unit.
      * @since 0.1.0
      */
-    public static fromInput(inputUnits: Unit[]): Layer {
-        let inputNeurons: InputNeuron[] = [];
-        let outputUnits: Unit[] = [];
+    public static fromInput(inputUnits:Unit[]):Layer {
+        let inputNeurons:InputNeuron[] = [];
+        let outputUnits:Unit[] = [];
         for (let i = 0; i < inputUnits.length; i++) {
             let outputUnit = new Unit();
             let inputNeuron = new InputNeuron(inputUnits[i], outputUnit);
@@ -96,12 +99,13 @@ export class Layer {
     }
 
     /**
-     * Generates a layer of neurons using an array of Units. Each unit is mapped 1-to-1 with a single Neuron.
-     * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
-     * types of neurons are:
-     * - Neuron (linear neuron)
+     * Generates a layer of neurons using an array of Unit objects. Uses ILayerConfiguration object to
+     * determine the type and amount of neurons used.
+     * - LinearNeuron (linear neuron)
+     * - PolynomialNeuron (polynomial neuron)
      * - SigmoidNeuron (log-sigmoidal neuron)
-     * TODO: Consider deprecating this method now that Layer.fromInput() exists
+     * - ReLUNeuron (ReLU neuron)
+     * @since 0.1.1 ReLU/Linear neurons now take all input units, added polynomial neuron support
      * @since 0.0.9 Now uses LinearNeuron since Neruon is now abstract
      * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
@@ -110,57 +114,54 @@ export class Layer {
      * @since 0.0.3 Renamed fromValues() to fromUnits(), now accepts `neuronType` as a parameter
      * @since 0.0.1
      */
-    public static fromUnits(units: Unit[], config: ILayerConfiguration, previousLayer?: Layer): Layer {
-        let neurons: Neuron[] = [];
-        let outputUnits: Unit[] = [];
-        for (let i = 0; i < units.length; i++) {
-            outputUnits[i] = new Unit();
-            let variableUnits = new Unit(config.coefficientGenerator());
-            switch (config.neuronType) {
-                case SigmoidNeuron:
-                    neurons[i] = new SigmoidNeuron(units[i], outputUnits[i], variableUnits);
-                    break;
-                case ReLUNeuron:
-                case LinearNeuron:
-                    let inputUnits = units.slice(i, i + 1);
-                    neurons[i] = new config.neuronType(inputUnits, outputUnits[i], config.coefficientGenerator);
-                    break;
-                default:
-                    throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
-            }
+    public static fromUnits(units:Unit[], config:ILayerConfiguration, previousLayer?:Layer):Layer {
+        let neurons:Neuron[] = [];
+        let outputUnits:Unit[] = [];
+        switch (config.neuronType) {
+            case SigmoidNeuron:
+                for(let i = 0; i < units.length; i++) {
+                    let variableUnit = new Unit(config.coefficientGenerator());
+                    outputUnits[i] = new Unit();
+                    neurons[i] = new SigmoidNeuron(units[i], outputUnits[i], variableUnit);
+                }
+                break;
+            case PolynomialNeuron:
+                for(let i = 0; i < units.length; i++) {
+                    outputUnits[i] = new Unit();
+                    neurons[i] = new PolynomialNeuron(
+                        units[i],
+                        outputUnits[i],
+                        config.degree,
+                        config.coefficientGenerator
+                    );
+                }
+                break;
+            case ReLUNeuron:
+            case LinearNeuron:
+                let neuronCount = config.neuronCount;
+                for (let i = 0; i < neuronCount; i++) {
+                    let inputUnits = previousLayer.getOutputUnits();
+                    outputUnits[i] = new Unit();
+                    neurons[i] = new config.neuronType(units, outputUnits[i], config.coefficientGenerator);
+                }
+                break;
+            default:
+                throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
         }
         return new Layer(neurons, outputUnits, previousLayer);
     }
 
     /**
-     * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
-     * supplied. The value for the variable units is determined randomly, check the code to see how the value for
-     * variable `coefficient` is calculated.
+     * A convenience method that calls `fromUnits()` using the output units of the supplied layer as inputs.
+     * @since 0.1.1 No longer contains any logic, now simply a wrapper for `fromUnits()`
      * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
      * @since 0.0.2 Added type for `variableUnits`
      * @since 0.0.1
      */
-    public static fromLayer(config: ILayerConfiguration, previousLayer: Layer): Layer {
-        switch (config.neuronType) {
-            case SigmoidNeuron:
-                return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
-            case ReLUNeuron:
-            case LinearNeuron:
-                let neurons: Neuron[] = [];
-                let outputUnits: Unit[] = [];
-                let neuronCount = config.neuronCount;
-                for (let i = 0; i < neuronCount; i++) {
-                    let inputUnits = previousLayer.getOutputUnits();
-                    outputUnits[i] = new Unit();
-                    neurons[i] = new config.neuronType(inputUnits, outputUnits[i], config.coefficientGenerator);
-
-                }
-                return new Layer(neurons, outputUnits, previousLayer);
-            default:
-                throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
-        }
+    public static fromLayer(config:ILayerConfiguration, previousLayer:Layer):Layer {
+        return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
     }
 
     /**
@@ -183,7 +184,7 @@ export class Layer {
      * adjust their variable units.
      * @since 0.0.1
      */
-    public backward(stepSize: number) {
+    public backward(stepSize:number) {
         for (let i = 0; i < this.neurons.length; i++) {
             if (this.previousLayer) {
                 this.neurons[i].backward(stepSize);
@@ -197,7 +198,7 @@ export class Layer {
      * Setter for nextLayer, used by the NeuralNetwork class
      * @since 0.0.1
      */
-    public setNextLayer(layer: Layer) {
+    public setNextLayer(layer:Layer) {
         this.nextLayer = layer;
     }
 
@@ -205,7 +206,7 @@ export class Layer {
      * Output units getter, used by the next layer or to extract the result from output layer
      * @since 0.0.1
      */
-    public getOutputUnits(): Unit[] {
+    public getOutputUnits():Unit[] {
         return this.outputUnits;
     }
 }
