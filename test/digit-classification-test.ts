@@ -38,6 +38,11 @@ let hiddenLayers: ILayerConfiguration[] = [
     },
     {
         coefficientGenerator: coefficientGenerator,
+        degree: 3,
+        neuronType: PolynomialNeuron,
+    },
+    {
+        coefficientGenerator: coefficientGenerator,
         neuronCount: 512,
         neuronType: ReLUNeuron,
     },
@@ -55,11 +60,19 @@ let trainingMatrices: IDigitMatrix[] = dataSet.trainingSet.slice(0, 11000);
 let trainIterations = 1;
 let trainRounds = 250;
 let colors = require('colors/safe');
+let prevAccuracy = 0.0;
+let maxAccuracy = 0.0;
 console.time(colors.green('Time elapsed'));
 console.log();
 for (let i = 0; i < trainRounds; i++) {
-    digitClassifier.test([testingMatrices[Math.floor(Math.random() * testingMatrices.length)]], true);
     let accuracy = digitClassifier.test(testingMatrices);
+    let change = accuracy - prevAccuracy;
+    let prevAccuracy = accuracy;
+    let displayChange = colors.red(change.toFixed(4));
+    if (change > 0) {
+        maxAccuracy = accuracy;
+        displayChange = colors.green('+' + change.toFixed(4));
+    }
     let displayIterations = (i * trainIterations).toString();
     while (displayIterations.length < 3) {
         displayIterations = ' ' + displayIterations;
@@ -71,8 +84,10 @@ for (let i = 0; i < trainRounds; i++) {
         line += '-';
     }
     line += '>';
-    line = colors.green(line);
+    line = colors.green(line)
     console.log('Accuracy after ' + displayIterations + ' iterations: ' + displayAccuracy + ' ' + line);
+    console.log('Accuracy gradient: ' + displayChange + '     Best accuracy: ' + colors.blue(maxAccuracy));
+    digitClassifier.test([testingMatrices[Math.floor(Math.random() * testingMatrices.length)]], true);
     let stepSize = 0.0001;
     if (accuracy > 0.3) {
         stepSize = 0.00001;
