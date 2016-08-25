@@ -8,10 +8,10 @@
     "jsx": "react"
   },
   "files": [
-    "./test/basic-classification-test",
-    "./test/basic-regression-test",
-    "./test/digit-classification-test",
-    "./test/neural-network-test",
+    "./test/basic-classification-test.ts",
+    "./test/basic-regression-test.ts",
+    "./test/digit-classification-test.ts",
+    "./test/neural-network-test.ts",
     "./typings/index.d.ts"
   ]
 }
