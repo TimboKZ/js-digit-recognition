@@ -2,7 +2,7 @@
   "name": "js-digit-recognition",
   "private": true,
   "scripts": {
-    "start": "node dist/core.js"
+    "start": "node dist/test/digit-classification-test.js"
   },
   "dependencies": {
     "buffer": "^4.9.0",
