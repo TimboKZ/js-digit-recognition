@@ -1,7 +1,7 @@
 module.exports = {
-    entry: "./src/core.ts",
+    entry: "./test/digit-classification-test.ts",
     output: {
-        filename: "./dist/core.js",
+        filename: "./dist/test/digit-classification-test.js",
     },
 
     // Enable sourcemaps for debugging webpack's output.
