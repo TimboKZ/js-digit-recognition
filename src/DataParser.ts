@@ -4,7 +4,7 @@
  * @author Timur Kuzhagaliyev <tim@xaerus.co.uk>
  * @copyright 2016
  * @license https://opensource.org/licenses/mit-license.php MIT License
- * @version 0.1.1
+ * @version 0.1.2
  */
 
 /**
@@ -24,9 +24,10 @@ export const IMAGE_SIZE = 16;
 /**
  * Threshold that determines at what point does RGB value become 1. Everything below the threshold will be become 0
  * in the matrix of the handwritten digit.
+ * @since 0.1.2 Increased from 40 to 60
  * @since 0.0.8
  */
-const RGB_THRESHOLD = 40;
+const RGB_THRESHOLD = 60;
 
 /**
  * DataParser will strip all images that have less white pixels than specified in the threshold
