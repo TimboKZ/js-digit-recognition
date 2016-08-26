@@ -3,7 +3,9 @@ import {DigitClassifier} from '../src/DigitClassifier';
 import {ILayerConfiguration} from '../src/Layer';
 import {Util} from '../src/Util';
 import {LinearNeuron} from '../src/neurons/LinearNeuron';
+import {PolynomialNeuron} from '../src/neurons/PolynomialNeuron';
 import {ReLUNeuron} from '../src/neurons/ReLUNeuron';
+import colors = require('colors');
 /**
  * The core of the neural network
  *
@@ -33,12 +35,7 @@ let inputUnitsCount = IMAGE_SIZE * IMAGE_SIZE;
 let hiddenLayers: ILayerConfiguration[] = [
     {
         coefficientGenerator: coefficientGenerator,
-        neuronCount: 32,
-        neuronType: LinearNeuron,
-    },
-    {
-        coefficientGenerator: coefficientGenerator,
-        degree: 3,
+        degree: 9,
         neuronType: PolynomialNeuron,
     },
     {
@@ -55,11 +52,11 @@ let hiddenLayers: ILayerConfiguration[] = [
 let digitClassifier = new DigitClassifier(inputUnitsCount, hiddenLayers);
 
 // SETUP THE TESTING/TRAINING ROUTINE
-let testingMatrices: IDigitMatrix[] = dataSet.testingSet.slice(0, 1000);
+let testingMatrices: IDigitMatrix[] = dataSet.testingSet.slice(0, 2000);
 let trainingMatrices: IDigitMatrix[] = dataSet.trainingSet.slice(0, 11000);
 let trainIterations = 1;
 let trainRounds = 250;
-let colors = require('colors/safe');
+
 let prevAccuracy = 0.0;
 let maxAccuracy = 0.0;
 console.time(colors.green('Time elapsed'));
@@ -67,7 +64,7 @@ console.log();
 for (let i = 0; i < trainRounds; i++) {
     let accuracy = digitClassifier.test(testingMatrices);
     let change = accuracy - prevAccuracy;
-    let prevAccuracy = accuracy;
+    prevAccuracy = accuracy;
     let displayChange = colors.red(change.toFixed(4));
     if (change > 0) {
         maxAccuracy = accuracy;
@@ -84,9 +81,12 @@ for (let i = 0; i < trainRounds; i++) {
         line += '-';
     }
     line += '>';
-    line = colors.green(line)
+    line = colors.green(line);
     console.log('Accuracy after ' + displayIterations + ' iterations: ' + displayAccuracy + ' ' + line);
-    console.log('Accuracy gradient: ' + displayChange + '     Best accuracy: ' + colors.blue(maxAccuracy));
+    console.log();
+    console.log(
+        'Accuracy gradient:     ' + displayChange + '     Best accuracy:     ' + colors.blue(maxAccuracy.toFixed(3))
+    );
     digitClassifier.test([testingMatrices[Math.floor(Math.random() * testingMatrices.length)]], true);
     let stepSize = 0.0001;
     if (accuracy > 0.3) {
