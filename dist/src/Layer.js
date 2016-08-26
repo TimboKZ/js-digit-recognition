@@ -2,6 +2,7 @@
 var Unit_1 = require('./Unit');
 var InputNeuron_1 = require('./neurons/InputNeuron');
 var LinearNeuron_1 = require('./neurons/LinearNeuron');
+var PolynomialNeuron_1 = require('./neurons/PolynomialNeuron');
 var ReLUNeuron_1 = require('./neurons/ReLUNeuron');
 var SigmoidNeuron_1 = require('./neurons/SigmoidNeuron');
 /**
@@ -38,12 +39,14 @@ var Layer = (function () {
         return new Layer(inputNeurons, outputUnits);
     };
     /**
-     * Generates a layer of neurons using an array of Units. Each unit is mapped 1-to-1 with a single Neuron.
-     * `neuronType` supplied determines the types of Neurons that will be used to populate this layer. Available
-     * types of neurons are:
-     * - Neuron (linear neuron)
+     * Generates a layer of neurons using an array of Unit objects. Uses ILayerConfiguration object to
+     * determine the type and amount of neurons used.
+     * - LinearNeuron (linear neuron)
+     * - PolynomialNeuron (polynomial neuron)
      * - SigmoidNeuron (log-sigmoidal neuron)
-     * TODO: Consider deprecating this method now that Layer.fromInput() exists
+     * - ReLUNeuron (ReLU neuron)
+     * @since 0.1.2 Removed leftover unused variables
+     * @since 0.1.1 ReLU/Linear neurons now take all input units, added polynomial neuron support
      * @since 0.0.9 Now uses LinearNeuron since Neruon is now abstract
      * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
@@ -55,28 +58,36 @@ var Layer = (function () {
     Layer.fromUnits = function (units, config, previousLayer) {
         var neurons = [];
         var outputUnits = [];
-        for (var i = 0; i < units.length; i++) {
-            outputUnits[i] = new Unit_1.Unit();
-            var variableUnits = new Unit_1.Unit(config.coefficientGenerator());
-            switch (config.neuronType) {
-                case SigmoidNeuron_1.SigmoidNeuron:
-                    neurons[i] = new SigmoidNeuron_1.SigmoidNeuron(units[i], outputUnits[i], variableUnits);
-                    break;
-                case ReLUNeuron_1.ReLUNeuron:
-                case LinearNeuron_1.LinearNeuron:
-                    var inputUnits = units.slice(i, i + 1);
-                    neurons[i] = new config.neuronType(inputUnits, outputUnits[i], config.coefficientGenerator);
-                    break;
-                default:
-                    throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
-            }
+        switch (config.neuronType) {
+            case SigmoidNeuron_1.SigmoidNeuron:
+                for (var i = 0; i < units.length; i++) {
+                    var variableUnit = new Unit_1.Unit(config.coefficientGenerator());
+                    outputUnits[i] = new Unit_1.Unit();
+                    neurons[i] = new SigmoidNeuron_1.SigmoidNeuron(units[i], outputUnits[i], variableUnit);
+                }
+                break;
+            case PolynomialNeuron_1.PolynomialNeuron:
+                for (var i = 0; i < units.length; i++) {
+                    outputUnits[i] = new Unit_1.Unit();
+                    neurons[i] = new PolynomialNeuron_1.PolynomialNeuron(units[i], outputUnits[i], config.degree, config.coefficientGenerator);
+                }
+                break;
+            case ReLUNeuron_1.ReLUNeuron:
+            case LinearNeuron_1.LinearNeuron:
+                var neuronCount = config.neuronCount;
+                for (var i = 0; i < neuronCount; i++) {
+                    outputUnits[i] = new Unit_1.Unit();
+                    neurons[i] = new config.neuronType(units, outputUnits[i], config.coefficientGenerator);
+                }
+                break;
+            default:
+                throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
         }
         return new Layer(neurons, outputUnits, previousLayer);
     };
     /**
-     * Generates a layer of neurons using the previous layer as the input provider and the layer configuration
-     * supplied. The value for the variable units is determined randomly, check the code to see how the value for
-     * variable `coefficient` is calculated.
+     * A convenience method that calls `fromUnits()` using the output units of the supplied layer as inputs.
+     * @since 0.1.1 No longer contains any logic, now simply a wrapper for `fromUnits()`
      * @since 0.0.8 Added ReLUNeurons
      * @since 0.0.7 Removed `typeof` keywords from switch-case statement
      * @since 0.0.5 Now takes ILayerConfiguration instead of neuron count
@@ -84,23 +95,7 @@ var Layer = (function () {
      * @since 0.0.1
      */
     Layer.fromLayer = function (config, previousLayer) {
-        switch (config.neuronType) {
-            case SigmoidNeuron_1.SigmoidNeuron:
-                return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
-            case ReLUNeuron_1.ReLUNeuron:
-            case LinearNeuron_1.LinearNeuron:
-                var neurons = [];
-                var outputUnits = [];
-                var neuronCount = config.neuronCount;
-                for (var i = 0; i < neuronCount; i++) {
-                    var inputUnits = previousLayer.getOutputUnits();
-                    outputUnits[i] = new Unit_1.Unit();
-                    neurons[i] = new config.neuronType(inputUnits, outputUnits[i], config.coefficientGenerator);
-                }
-                return new Layer(neurons, outputUnits, previousLayer);
-            default:
-                throw new Error('Unrecognised Neuron type supplied to the layer constructor!');
-        }
+        return Layer.fromUnits(previousLayer.getOutputUnits(), config, previousLayer);
     };
     /**
      * Trigger the forward pass. Runs the forward pass on all of the neurons in the layer forcing them to update the
